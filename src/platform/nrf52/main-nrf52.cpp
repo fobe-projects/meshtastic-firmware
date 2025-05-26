@@ -285,9 +285,27 @@ void cpuDeepSleep(uint32_t msecToWake)
     // This may cause crashes as debug messages continue to flow.
     Serial.end();
 #ifdef PIN_SERIAL1_RX
+#if PIN_SERIAL1_RX > 0
     Serial1.end();
 #endif
+#endif
+#ifdef PIN_SERIAL2_RX
+#if PIN_SERIAL2_RX > 0
+    Serial2.end();
+#endif
+#endif
     setBluetoothEnable(false);
+
+#ifdef FOBE_FEATHER_NRF52840
+    for (int pin = 0; pin < 48; pin++) {
+        if (pin == PIN_BUTTON1 || pin == SX126X_CS || pin == SX126X_DIO1 || pin == SX126X_BUSY || pin == SX126X_RESET ||
+            pin == SX126X_RXEN || pin == PIN_SPI_MISO || pin == PIN_SPI_MOSI || pin == PIN_SPI_SCK) {
+            continue;
+        }
+        nrf_gpio_cfg_default(pin);
+    }
+    pinMode(PIN_BUTTON1, INPUT_PULLUP_SENSE);
+#endif
 
 #ifdef RAK4630
 #ifdef PIN_3V3_EN
