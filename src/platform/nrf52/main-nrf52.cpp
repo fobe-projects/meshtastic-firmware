@@ -289,6 +289,36 @@ void cpuDeepSleep(uint32_t msecToWake)
 #endif
     setBluetoothEnable(false);
 
+#ifdef FOBE_DEVKIT_NRF52840
+    for (int pin = 0; pin < 48; pin++) {
+        if (pin == PIN_BUTTON1 || pin == SX126X_CS || pin == SX126X_DIO1 || pin == SX126X_BUSY || pin == SX126X_RESET ||
+            pin == SX126X_RXEN || pin == PIN_SPI_MISO || pin == PIN_SPI_MOSI || pin == PIN_SPI_SCK) {
+            continue;
+        }
+        nrf_gpio_cfg_default(pin);
+    }
+#ifdef PIN_3V3_EN
+    pinMode(PIN_3V3_EN, OUTPUT);
+    digitalWrite(PIN_3V3_EN, LOW);
+#endif
+#endif
+
+#ifdef FOBE_MESHLINK_R1LG
+    for (int pin = 0; pin < 48; pin++) {
+        if (pin == PIN_BUTTON1 || pin == PIN_BUTTON2 || pin == SX126X_CS || pin == SX126X_DIO1 || pin == SX126X_BUSY ||
+            pin == SX126X_RESET || pin == SX126X_RXEN || pin == PIN_SPI_MISO || pin == PIN_SPI_MOSI || pin == PIN_SPI_SCK) {
+            continue;
+        }
+        nrf_gpio_cfg_default(pin);
+    }
+#ifdef PIN_3V3_EN
+    pinMode(PIN_3V3_EN, OUTPUT);
+    digitalWrite(PIN_3V3_EN, LOW);
+#endif
+    pinMode(PIN_BUTTON1, INPUT_PULLUP_SENSE);
+    pinMode(PIN_BUTTON2, INPUT_PULLUP_SENSE);
+#endif
+
 #ifdef RAK4630
 #ifdef PIN_3V3_EN
     digitalWrite(PIN_3V3_EN, LOW);

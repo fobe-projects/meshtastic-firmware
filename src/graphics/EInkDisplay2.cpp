@@ -217,7 +217,7 @@ bool EInkDisplay::connect()
         adafruitDisplay->setRotation(1);
         adafruitDisplay->setPartialWindow(0, 0, EINK_WIDTH, EINK_HEIGHT);
     }
-#elif defined(HELTEC_MESH_POCKET)
+#elif defined(HELTEC_MESH_POCKET) || defined(FOBE_MESHLINK_R1LG)
     {
         spi1 = &SPI1;
         spi1->begin();

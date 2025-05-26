@@ -73,7 +73,7 @@ class EInkDisplay : public OLEDDisplay
     SPIClass *hspi = NULL;
 #endif
 
-#if defined(HELTEC_MESH_POCKET)
+#if defined(HELTEC_MESH_POCKET) || defined(FOBE_MESHLINK_R1LG)
     SPIClass *spi1 = NULL;
 #endif
 
