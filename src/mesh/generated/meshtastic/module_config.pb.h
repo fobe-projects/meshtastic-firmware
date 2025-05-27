@@ -69,6 +69,35 @@ typedef enum _meshtastic_ModuleConfig_SerialConfig_Serial_Baud {
     meshtastic_ModuleConfig_SerialConfig_Serial_Baud_BAUD_921600 = 15
 } meshtastic_ModuleConfig_SerialConfig_Serial_Baud;
 
+/* Formats for the Serial */
+typedef enum _meshtastic_ModuleConfig_SerialConfig_Serial_Format {
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_DEFAULT = 0,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_5N1 = 1,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_6N1 = 2,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_7N1 = 3,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8N1 = 4,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_5N2 = 5,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_6N2 = 6,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_7N2 = 7,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8N2 = 8,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_5E1 = 9,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_6E1 = 10,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_7E1 = 11,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8E1 = 12,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_5E2 = 13,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_6E2 = 14,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_7E2 = 15,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8E2 = 16,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_5O1 = 17,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_6O1 = 18,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_7O1 = 19,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8O1 = 20,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_5O2 = 21,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_6O2 = 22,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_7O2 = 23,
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8O2 = 24
+} meshtastic_ModuleConfig_SerialConfig_Serial_Format;
+
 /* TODO: REPLACE */
 typedef enum _meshtastic_ModuleConfig_SerialConfig_Serial_Mode {
     meshtastic_ModuleConfig_SerialConfig_Serial_Mode_DEFAULT = 0,
@@ -242,6 +271,10 @@ typedef struct _meshtastic_ModuleConfig_SerialConfig {
  This is currently only usable in output modes like NMEA / CalTopo and may behave strangely or not work at all in other modes
  Existing logging over the Serial Console will still be present */
     bool override_console_serial_port;
+    /* Serial format */
+    meshtastic_ModuleConfig_SerialConfig_Serial_Format format;
+    /* Direction control pin for RS-485 transceiver */
+    uint32_t rs485_direction;
 } meshtastic_ModuleConfig_SerialConfig;
 
 /* External Notifications Config */
@@ -471,6 +504,10 @@ extern "C" {
 #define _meshtastic_ModuleConfig_SerialConfig_Serial_Baud_MAX meshtastic_ModuleConfig_SerialConfig_Serial_Baud_BAUD_921600
 #define _meshtastic_ModuleConfig_SerialConfig_Serial_Baud_ARRAYSIZE ((meshtastic_ModuleConfig_SerialConfig_Serial_Baud)(meshtastic_ModuleConfig_SerialConfig_Serial_Baud_BAUD_921600+1))
 
+#define _meshtastic_ModuleConfig_SerialConfig_Serial_Format_MIN meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_DEFAULT
+#define _meshtastic_ModuleConfig_SerialConfig_Serial_Format_MAX meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8O2
+#define _meshtastic_ModuleConfig_SerialConfig_Serial_Format_ARRAYSIZE ((meshtastic_ModuleConfig_SerialConfig_Serial_Format)(meshtastic_ModuleConfig_SerialConfig_Serial_Format_FORMAT_8O2+1))
+
 #define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MIN meshtastic_ModuleConfig_SerialConfig_Serial_Mode_DEFAULT
 #define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MAX meshtastic_ModuleConfig_SerialConfig_Serial_Mode_VE_DIRECT
 #define _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_ARRAYSIZE ((meshtastic_ModuleConfig_SerialConfig_Serial_Mode)(meshtastic_ModuleConfig_SerialConfig_Serial_Mode_VE_DIRECT+1))
@@ -491,6 +528,7 @@ extern "C" {
 
 #define meshtastic_ModuleConfig_SerialConfig_baud_ENUMTYPE meshtastic_ModuleConfig_SerialConfig_Serial_Baud
 #define meshtastic_ModuleConfig_SerialConfig_mode_ENUMTYPE meshtastic_ModuleConfig_SerialConfig_Serial_Mode
+#define meshtastic_ModuleConfig_SerialConfig_format_ENUMTYPE meshtastic_ModuleConfig_SerialConfig_Serial_Format
 
 
 
@@ -513,7 +551,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_DetectionSensorConfig_init_default {0, 0, 0, 0, "", 0, _meshtastic_ModuleConfig_DetectionSensorConfig_TriggerType_MIN, 0}
 #define meshtastic_ModuleConfig_AudioConfig_init_default {0, 0, _meshtastic_ModuleConfig_AudioConfig_Audio_Baud_MIN, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_PaxcounterConfig_init_default {0, 0, 0, 0}
-#define meshtastic_ModuleConfig_SerialConfig_init_default {0, 0, 0, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Baud_MIN, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MIN, 0}
+#define meshtastic_ModuleConfig_SerialConfig_init_default {0, 0, 0, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Baud_MIN, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MIN, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Format_MIN, 0}
 #define meshtastic_ModuleConfig_ExternalNotificationConfig_init_default {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_StoreForwardConfig_init_default {0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_RangeTestConfig_init_default {0, 0, 0}
@@ -529,7 +567,7 @@ extern "C" {
 #define meshtastic_ModuleConfig_DetectionSensorConfig_init_zero {0, 0, 0, 0, "", 0, _meshtastic_ModuleConfig_DetectionSensorConfig_TriggerType_MIN, 0}
 #define meshtastic_ModuleConfig_AudioConfig_init_zero {0, 0, _meshtastic_ModuleConfig_AudioConfig_Audio_Baud_MIN, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_PaxcounterConfig_init_zero {0, 0, 0, 0}
-#define meshtastic_ModuleConfig_SerialConfig_init_zero {0, 0, 0, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Baud_MIN, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MIN, 0}
+#define meshtastic_ModuleConfig_SerialConfig_init_zero {0, 0, 0, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Baud_MIN, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Mode_MIN, 0, _meshtastic_ModuleConfig_SerialConfig_Serial_Format_MIN, 0}
 #define meshtastic_ModuleConfig_ExternalNotificationConfig_init_zero {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_StoreForwardConfig_init_zero {0, 0, 0, 0, 0, 0}
 #define meshtastic_ModuleConfig_RangeTestConfig_init_zero {0, 0, 0}
@@ -583,6 +621,8 @@ extern "C" {
 #define meshtastic_ModuleConfig_SerialConfig_timeout_tag 6
 #define meshtastic_ModuleConfig_SerialConfig_mode_tag 7
 #define meshtastic_ModuleConfig_SerialConfig_override_console_serial_port_tag 8
+#define meshtastic_ModuleConfig_SerialConfig_format_tag 9
+#define meshtastic_ModuleConfig_SerialConfig_rs485_direction_tag 10
 #define meshtastic_ModuleConfig_ExternalNotificationConfig_enabled_tag 1
 #define meshtastic_ModuleConfig_ExternalNotificationConfig_output_ms_tag 2
 #define meshtastic_ModuleConfig_ExternalNotificationConfig_output_tag 3
@@ -764,7 +804,9 @@ X(a, STATIC,   SINGULAR, UINT32,   txd,               4) \
 X(a, STATIC,   SINGULAR, UENUM,    baud,              5) \
 X(a, STATIC,   SINGULAR, UINT32,   timeout,           6) \
 X(a, STATIC,   SINGULAR, UENUM,    mode,              7) \
-X(a, STATIC,   SINGULAR, BOOL,     override_console_serial_port,   8)
+X(a, STATIC,   SINGULAR, BOOL,     override_console_serial_port,   8) \
+X(a, STATIC,   SINGULAR, UENUM,    format,            9) \
+X(a, STATIC,   SINGULAR, UINT32,   rs485_direction,  10)
 #define meshtastic_ModuleConfig_SerialConfig_CALLBACK NULL
 #define meshtastic_ModuleConfig_SerialConfig_DEFAULT NULL
 
@@ -900,7 +942,7 @@ extern const pb_msgdesc_t meshtastic_RemoteHardwarePin_msg;
 #define meshtastic_ModuleConfig_PaxcounterConfig_size 30
 #define meshtastic_ModuleConfig_RangeTestConfig_size 10
 #define meshtastic_ModuleConfig_RemoteHardwareConfig_size 96
-#define meshtastic_ModuleConfig_SerialConfig_size 28
+#define meshtastic_ModuleConfig_SerialConfig_size 36
 #define meshtastic_ModuleConfig_StoreForwardConfig_size 24
 #define meshtastic_ModuleConfig_TelemetryConfig_size 46
 #define meshtastic_ModuleConfig_size             227
