@@ -191,11 +191,6 @@ jobs:
             matrix.arch == 'stm32' && 'arch/stm32/stm32.ini' || ''
             ) }}
 
-      - name: Upgrade PlatformIO
-        shell: bash
-        run: |
-          pio upgrade
-
       - name: Install PlatformIO dependencies
         shell: bash
         run: |
@@ -205,18 +200,21 @@ jobs:
           else
             TARGETS=$(./bin/generate_ci_matrix.py ${{matrix.arch}} pr)
           fi
-          mkdir -p .pio/libdeps/${{matrix.arch}}
+          mkdir -p .pio/libdeps/template
           echo "$TARGETS" | jq -r '.[]' | while read -r env; do
+              mv .pio/libdeps/template .pio/libdeps/$env
               echo "Gathering environment: $env"
               pio pkg install --environment "$env"
               pio pkg install --environment "$env" --no-save \
                   --tool platformio/tool-cppcheck \
                   --tool platformio/tool-mklittlefs
-              echo "Deduplicating ~/.platformio"
               jdupes --quiet -r -L ~/.platformio
-              echo "Deduplicating .pio"
               jdupes --quiet -r -L .pio
+              cp -R .pio/libdeps/$env .pio/libdeps/template
           done
+          rm -rf .pio/libdeps/template
+          jdupes --quiet -r -L ~/.platformio
+          jdupes --quiet -r -L .pio
           echo "All packages loaded successfully."
 
   # check:
