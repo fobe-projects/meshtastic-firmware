@@ -18,8 +18,13 @@ permissions: read-all
 jobs:
   pio-build:
     name: build-${{ inputs.platform }}
-    runs-on: ubuntu-24.04
+    runs-on: self-hosted
     steps:
+      - name: https://github.com/actions/checkout/issues/1720
+        shell: bash
+        run: |
+          sudo chmod -R u+w ~/runner/_work
+          sudo chown -R $(id -un):$(id -gn) ~/runner/_work
       - uses: actions/checkout@v5
         with:
           submodules: recursive
