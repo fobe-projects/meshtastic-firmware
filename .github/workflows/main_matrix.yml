@@ -141,9 +141,11 @@ jobs:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - name: Uncomment build epoch
+      - name: Cleanup build environment
         shell: bash
         run: |
+          rm -rf ~/.platformio
+          rm -rf .pio
           sed -i 's/#-DBUILD_EPOCH=$UNIX_TIME/-DBUILD_EPOCH=$UNIX_TIME/' platformio.ini
 
       - name: Setup Python
@@ -197,16 +199,16 @@ jobs:
           mkdir -p .pio/libdeps/template
           echo "$TARGETS" | jq -r '.[]' | while read -r env; do
               mv .pio/libdeps/template .pio/libdeps/$env
-              echo "\e[34mGathering environment: $env\e[0m"
+              echo "Gathering environment: $env"
               pio pkg install --environment "$env"
               pio pkg install --environment "$env" --no-save \
                   --tool platformio/tool-cppcheck \
                   --tool platformio/tool-mklittlefs
               cp -R .pio/libdeps/$env .pio/libdeps/template
           done
-          rm -rf .pio/libdeps/template
-          jdupes --quiet -r -L ~/.platformio
-          jdupes --quiet -r -L .pio
+            rm -rf .pio/libdeps/template
+            jdupes --quiet -r -L ~/.platformio || echo "Warning: jdupes failed for ~/.platformio directory"
+            jdupes --quiet -r -L .pio || echo "Warning: jdupes failed for .pio directory"
           echo "All packages loaded successfully."
 
   # check:
