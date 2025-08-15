@@ -184,8 +184,6 @@ jobs:
             setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ steps.date.outputs.current_date }}
           restore-keys: |
             setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-
-            setup-platformio-${{ runner.os }}-${{ runner.arch }}-
-            setup-platformio-${{ runner.os }}-
 
       - name: Install PlatformIO dependencies
         shell: bash
