@@ -202,8 +202,6 @@ jobs:
               pio pkg install --environment "$env" --no-save \
                   --tool platformio/tool-cppcheck \
                   --tool platformio/tool-mklittlefs
-              jdupes --quiet -r -L ~/.platformio
-              jdupes --quiet -r -L .pio
               cp -R .pio/libdeps/$env .pio/libdeps/template
           done
           rm -rf .pio/libdeps/template
