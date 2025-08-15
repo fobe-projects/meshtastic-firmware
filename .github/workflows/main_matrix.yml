@@ -31,15 +31,15 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          # - esp32
-          # - esp32s3
-          # - esp32c3
-          # - esp32c6
-          # - nrf52840
-          # - rp2040
-          # - rp2350
+          - esp32
+          - esp32s3
+          - esp32c3
+          - esp32c6
+          - nrf52840
+          - rp2040
+          - rp2350
           - stm32
-          # - check
+          - check
     runs-on: self-hosted
     env:
       PIGZ: -p 56
@@ -117,13 +117,13 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          # - esp32
-          # - esp32s3
-          # - esp32c3
-          # - esp32c6
-          # - nrf52840
-          # - rp2040
-          # - rp2350
+          - esp32
+          - esp32s3
+          - esp32c3
+          - esp32c6
+          - nrf52840
+          - rp2040
+          - rp2350
           - stm32
     env:
       RUNS_ON_S3_BUCKET_CACHE: fobe-gars-cache
@@ -199,7 +199,7 @@ jobs:
           mkdir -p .pio/libdeps/template
           echo "$TARGETS" | jq -r '.[]' | while read -r env; do
               mv .pio/libdeps/template .pio/libdeps/$env
-              echo "\033[0;34m ::notice title=Environment Processing::Gathering environment: $env"
+              echo "\e[34mGathering environment: $env\e[0m"
               pio pkg install --environment "$env"
               pio pkg install --environment "$env" --no-save \
                   --tool platformio/tool-cppcheck \
