@@ -199,7 +199,7 @@ jobs:
           mkdir -p .pio/libdeps/template
           echo "$TARGETS" | jq -r '.[]' | while read -r env; do
               mv .pio/libdeps/template .pio/libdeps/$env
-              echo "Gathering environment: $env"
+              echo "::notice title=Environment Processing::Gathering environment: $env"
               pio pkg install --environment "$env"
               pio pkg install --environment "$env" --no-save \
                   --tool platformio/tool-cppcheck \
