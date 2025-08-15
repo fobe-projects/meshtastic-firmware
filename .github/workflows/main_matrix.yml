@@ -171,25 +171,21 @@ jobs:
           pip install -U poetry --no-build-isolation
           pip install -U meshtastic --pre --no-build-isolation
 
+      - name: Get current date
+        id: date
+        run: echo "current_date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
       - name: Cache PlatformIO dependencies
         uses: runs-on/cache@v4
         with:
           path: |
             ~/.platformio
           key: |
-            setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ hashFiles(
-            'platformio.ini',
-            matrix.arch == 'esp32' && 'arch/esp32/esp32.ini' || '',
-            matrix.arch == 'esp32c3' && 'arch/esp32/esp32c3.ini' || '',
-            matrix.arch == 'esp32c6' && 'arch/esp32/esp32c6.ini' || '',
-            matrix.arch == 'esp32s2' && 'arch/esp32/esp32s2.ini' || '',
-            matrix.arch == 'esp32s3' && 'arch/esp32/esp32s3.ini' || '',
-            matrix.arch == 'nrf52840' && 'arch/nrf52/nrf52.ini' || '',
-            matrix.arch == 'nrf52840' && 'arch/nrf52/nrf52840.ini' || '',
-            matrix.arch == 'rp2040' && 'arch/rp2xx0/rp2040.ini' || '',
-            matrix.arch == 'rp2350' && 'arch/rp2xx0/rp2350.ini' || '',
-            matrix.arch == 'stm32' && 'arch/stm32/stm32.ini' || ''
-            ) }}
+            setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ steps.date.outputs.current_date }}
+          restore-keys: |
+            setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-
+            setup-platformio-${{ runner.os }}-${{ runner.arch }}-
+            setup-platformio-${{ runner.os }}-
 
       - name: Install PlatformIO dependencies
         shell: bash
