@@ -208,12 +208,14 @@ jobs:
           mkdir -p .pio/libdeps/${{matrix.arch}}
           echo "$TARGETS" | jq -r '.[]' | while read -r env; do
               echo "Gathering environment: $env"
-              mv .pio/libdeps/${{matrix.arch}} .pio/libdeps/$env
               pio pkg install --environment "$env"
               pio pkg install --environment "$env" --no-save \
                   --tool platformio/tool-cppcheck \
                   --tool platformio/tool-mklittlefs
-              mv .pio/libdeps/$env .pio/libdeps/${{matrix.arch}}
+              echo "Deduplicating ~/.platformio"
+              jdupes --quiet -r -L ~/.platformio
+              echo "Deduplicating .pio"
+              jdupes --quiet -r -L .pio
           done
           echo "All packages loaded successfully."
 
