@@ -85,6 +85,9 @@ jobs:
           -v $GITHUB_WORKSPACE:/workspace \
           ghcr.mirror.dc.fobestudio.com/meshtastic/gh-action-firmware:master-${{ inputs.platform }}
 
+          sudo chmod -R u+w ~/runner/_work
+          sudo chown -R $(id -un):$(id -gn) ~/runner/_work
+
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4
         with:
