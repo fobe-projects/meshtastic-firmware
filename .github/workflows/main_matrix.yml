@@ -214,6 +214,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJson(needs.setup.outputs.stm32) }}
     uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
     with:
       version: ${{ needs.version.outputs.long }}
       pio_env: ${{ matrix.board }}
