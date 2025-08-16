@@ -47,14 +47,6 @@ runs:
           setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ inputs.platform }}-
         lookup-only: ${{ inputs.check-only == 'true' }}
 
-    - name: Check cache requirement for read-only mode
-      if: inputs.read-only == 'true' && steps.cache.outputs.cache-hit != 'true'
-      shell: bash
-      run: |
-        echo "Error: read-only mode enabled but cache was not found"
-        echo "Cache hit: ${{ steps.cache.outputs.cache-hit }}"
-        exit 1
-
     - name: Output cache status
       shell: bash
       run: |
@@ -63,6 +55,14 @@ runs:
           echo "check-only mode enabled, skipping remaining steps"
           exit 0
         fi
+
+    - name: Check cache requirement for read-only mode
+      if: inputs.read-only == 'true' && steps.cache.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        echo "Error: read-only mode enabled but cache was not found"
+        echo "Cache hit: ${{ steps.cache.outputs.cache-hit }}"
+        exit 1
 
     - name: Upgrade Python tools
       if: inputs.check-only != 'true'
