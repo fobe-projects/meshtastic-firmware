@@ -79,7 +79,7 @@ runs:
       shell: bash
       run: |
         pio upgrade
-        TARGETS=$(./bin/generate_ci_matrix.py ${{ inputs.platform }})
+        TARGETS=$(./bin/generate_ci_matrix.py ${{ inputs.platform }} extra)
         echo "$TARGETS" | jq -r '.[]' | while read -r env; do
             echo "Gathering environment: $env"
             # Retry up to 3 times on failure
