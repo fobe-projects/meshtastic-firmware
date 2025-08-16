@@ -1,0 +1,69 @@
+name: Setup PlatformIO with S3 cache
+description: Install and restore PlatformIO dependencies using S3 cache
+
+runs:
+  using: composite
+  steps:
+    - name: Cleanup PlatformIO environment
+      shell: bash
+      run: |
+        rm -rf ~/.platformio
+        rm -rf .pio
+
+    - name: Get current date
+      id: date
+      shell: bash
+      run: echo "current_date=$(date +'%Y%m%d')" >> $GITHUB_OUTPUT
+
+    - name: Cache PlatformIO dependencies
+      uses: runs-on/cache@v4
+      with:
+        path: |
+          ~/.platformio
+          .pio/libdeps
+        key: |
+          setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-${{ steps.date.outputs.current_date }}
+        restore-keys: |
+          setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ matrix.arch }}-
+
+    - name: Install PlatformIO dependencies
+      shell: bash
+      run: |
+        pio upgrade
+        TARGETS=$(./bin/generate_ci_matrix.py ${{matrix.arch}})
+        echo "$TARGETS" | jq -r '.[]' | while read -r env; do
+            echo "Gathering environment: $env"
+              # Retry up to 3 times on failure
+              for attempt in {1..3}; do
+                echo "Attempt $attempt for environment: $env"
+                if pio pkg install --environment "$env"; then
+                  break
+                elif [ $attempt -eq 3 ]; then
+                  echo "Failed to install packages for $env after 3 attempts"
+                  exit 1
+                else
+                  echo "Attempt $attempt failed, retrying..."
+                  sleep 5
+                fi
+              done
+              for attempt in {1..3}; do
+                echo "Attempt $attempt for tools installation: $env"
+                if pio pkg install --environment "$env" --no-save \
+                  --tool platformio/tool-cppcheck \
+                  --tool platformio/tool-mklittlefs; then
+                  break
+                elif [ $attempt -eq 3 ]; then
+                  echo "Failed to install tools for $env after 3 attempts"
+                  exit 1
+                else
+                  echo "Attempt $attempt failed, retrying..."
+                  sleep 5
+                fi
+              done
+            jdupes --quiet -r -L ~/.platformio || echo "Warning: jdupes failed for ~/.platformio directory"
+            jdupes --quiet -r -L .pio || echo "Warning: jdupes failed for .pio directory"
+        done
+        rm -rf .pio/libdeps/template
+        jdupes --quiet -r -L ~/.platformio || echo "Warning: jdupes failed for ~/.platformio directory"
+        jdupes --quiet -r -L .pio || echo "Warning: jdupes failed for .pio directory"
+        echo "All packages loaded successfully."
