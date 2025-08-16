@@ -57,13 +57,6 @@ jobs:
       - name: Setup Python
         uses: ./.github/actions/setup-python
 
-      - name: Setup PlatformIO
-        id: setup-platformio
-        uses: ./.github/actions/setup-platformio
-        with:
-          platform: ${{ inputs.platform }}
-          read-only: true
-
       - name: Build ${{ inputs.platform }}
         id: build
         shell: bash
@@ -72,34 +65,17 @@ jobs:
           MT_PLATFORM=${{ inputs.platform }}
           MT_OTA_FIRMWARE_SOURCE=${{ steps.ota_dir.outputs.src || '' }}
           MT_OTA_FIRMWARE_TARGET=${{ steps.ota_dir.outputs.tgt || '' }}
-
-          if [[ "$MT_PLATFORM" == esp32* ]]; then
-              MT_PLATFORM="esp32"
-          elif [[ "$MT_PLATFORM" == nrf52* ]]; then
-              MT_PLATFORM="nrf52"
-          elif [[ "$MT_PLATFORM" == rp2040 ]] || [[ "$MT_PLATFORM" == rp2350 ]]; then
-              MT_PLATFORM="rp2xx0"
-          elif [[ "$MT_PLATFORM" == stm32 ]]; then
-              # Remove when stm32 has been fully renamed to stm32wl
-              MT_PLATFORM="stm32wl"
-          fi
-
-          echo "Building PlatformIO environment: $MT_ENV"
-          ./bin/build-"${MT_PLATFORM}".sh "$MT_ENV"
-          echo "Build artifacts are located at: $PLATFORMIO_BUILD_DIR"
-
-          if [ -n "$MT_OTA_FIRMWARE_SOURCE" ] && [ -n "$MT_OTA_FIRMWARE_TARGET" ]; then
-            echo "Downloading OTA firmware $MT_OTA_FIRMWARE_SOURCE from https://github.com/meshtastic/firmware-ota"
-            for i in {1..5}; do
-              curl -L "https://github.com/meshtastic/firmware-ota/releases/download/latest/$MT_OTA_FIRMWARE_SOURCE" -o "$MT_OTA_FIRMWARE_TARGET" && break
-              echo "Download failed, retrying ($i/5)..."
-              sleep 2
-            done
-            if [ ! -f "$MT_OTA_FIRMWARE_TARGET" ]; then
-              echo "Failed to download OTA firmware after 5 attempts."
-              exit 1
-            fi
-          fi
+          docker run --rm \
+          --env GITHUB_ACTIONS \
+          --env XDG_CACHE_HOME \
+          --env MT_ENV \
+          --env MT_PLATFORM \
+          --env MT_TARGET \
+          --env MT_OTA_FIRMWARE_SOURCE \
+          --env MT_OTA_FIRMWARE_TARGET \
+          --env PLATFORMIO_BUILD_DIR \
+          -v $GITHUB_WORKSPACE:/workspace \
+          ghcr.mirror.dc.fobestudio.com/meshtastic/gh-action-firmware:master-${{ inputs.platform }}
 
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4

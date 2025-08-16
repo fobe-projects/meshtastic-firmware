@@ -60,13 +60,6 @@ jobs:
 
       - run: pip install -U platformio
 
-      - name: Setup PlatformIO
-        id: setup-platformio
-        uses: ./.github/actions/setup-platformio
-        with:
-          platform: ${{ matrix.platform }}
-          check-only: true
-
       - name: Check PlatformIO cache exists
         if: steps.setup-platformio.outputs.cache-hit != 'true'
         env:
