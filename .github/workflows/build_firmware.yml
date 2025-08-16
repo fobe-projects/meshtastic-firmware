@@ -60,11 +60,19 @@ jobs:
       - name: Build ${{ inputs.platform }}
         id: build
         shell: bash
+        env:
+          MT_ENV: ${{ inputs.pio_env }}
+          MT_PLATFORM: ${{ inputs.platform }}
+          MT_TARGET: build
+          MT_OTA_FIRMWARE_SOURCE: ${{ steps.ota_dir.outputs.src || '' }}
+          MT_OTA_FIRMWARE_TARGET: ${{ steps.ota_dir.outputs.tgt || '' }}
+          PLATFORMIO_BUILD_DIR: /workspace/.pio/build
         run: |
           MT_ENV=${{ inputs.pio_env }}
           MT_PLATFORM=${{ inputs.platform }}
           MT_OTA_FIRMWARE_SOURCE=${{ steps.ota_dir.outputs.src || '' }}
           MT_OTA_FIRMWARE_TARGET=${{ steps.ota_dir.outputs.tgt || '' }}
+
           docker run --rm \
           --env GITHUB_ACTIONS \
           --env XDG_CACHE_HOME \
