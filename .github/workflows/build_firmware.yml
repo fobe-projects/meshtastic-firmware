@@ -83,7 +83,7 @@ jobs:
           fi
 
           echo "Building PlatformIO environment: $MT_ENV"
-          /workspace/bin/build-"${MT_PLATFORM}".sh "$MT_ENV"
+          ./bin/build-"${MT_PLATFORM}".sh "$MT_ENV"
           echo "Build artifacts are located at: $PLATFORMIO_BUILD_DIR"
 
           if [ -n "$MT_OTA_FIRMWARE_SOURCE" ] && [ -n "$MT_OTA_FIRMWARE_TARGET" ]; then
