@@ -1,0 +1,51 @@
+name: Daily Setup
+
+permissions:
+  contents: read
+
+concurrency:
+  group: daily-setup-workflow
+  cancel-in-progress: false
+
+on:
+  schedule:
+    - cron: 0 16 * * *
+  workflow_dispatch:
+
+jobs:
+  setup:
+    if: github.ref == 'refs/heads/workflow'
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - esp32
+          - esp32s3
+          - esp32c3
+          - esp32c6
+          - nrf52840
+          - rp2040
+          - rp2350
+          - stm32
+          - check
+    runs-on: self-hosted
+    env:
+      ZSTD_NBTHREADS: 56
+      RUNS_ON_S3_BUCKET_CACHE: fobe-gars-cache
+      RUNS_ON_AWS_REGION: cn-sounth-fobe-1
+      AWS_ACCESS_KEY_ID: ${{ secrets.FOBE_GARS_S3_ACCESS_KEY }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.FOBE_GARS_S3_SECRET_KEY }}
+      AWS_ENDPOINT_URL: "http://${{ secrets.FOBE_GARS_S3_ENDPOINT_HOST }}:${{ secrets.FOBE_GARS_S3_ENDPOINT_PORT }}"
+      RUNS_ON_S3_FORCE_PATH_STYLE: "true"
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
+
+      - name: Setup PlatformIO
+        uses: ./.github/actions/setup-platformio
+        with:
+          arch: ${{ matrix.arch }}
+          check-only: false
+          readonly: false
