@@ -89,8 +89,16 @@ jobs:
           echo "Build artifacts are located at: $PLATFORMIO_BUILD_DIR"
 
           if [ -n "$MT_OTA_FIRMWARE_SOURCE" ] && [ -n "$MT_OTA_FIRMWARE_TARGET" ]; then
-              echo "Downloading OTA firmware $MT_OTA_FIRMWARE_SOURCE from https://github.com/meshtastic/firmware-ota"
-              curl -L "https://github.com/meshtastic/firmware-ota/releases/download/latest/$MT_OTA_FIRMWARE_SOURCE" -o "$MT_OTA_FIRMWARE_TARGET"
+            echo "Downloading OTA firmware $MT_OTA_FIRMWARE_SOURCE from https://github.com/meshtastic/firmware-ota"
+            for i in {1..5}; do
+              curl -L "https://github.com/meshtastic/firmware-ota/releases/download/latest/$MT_OTA_FIRMWARE_SOURCE" -o "$MT_OTA_FIRMWARE_TARGET" && break
+              echo "Download failed, retrying ($i/5)..."
+              sleep 2
+            done
+            if [ ! -f "$MT_OTA_FIRMWARE_TARGET" ]; then
+              echo "Failed to download OTA firmware after 5 attempts."
+              exit 1
+            fi
           fi
 
       - name: Store binaries as an artifact
