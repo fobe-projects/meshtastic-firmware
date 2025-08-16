@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch:
+        platform:
           - esp32
           - esp32s3
           - esp32c3
@@ -46,6 +46,6 @@ jobs:
       - name: Setup PlatformIO
         uses: ./.github/actions/setup-platformio
         with:
-          arch: ${{ matrix.arch }}
+          platform: ${{ matrix.platform }}
           check-only: false
-          readonly: false
+          read-only: false

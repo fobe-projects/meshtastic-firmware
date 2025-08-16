@@ -20,11 +20,6 @@ jobs:
     name: build-${{ inputs.platform }}
     runs-on: self-hosted
     steps:
-      - name: https://github.com/actions/checkout/issues/1720
-        shell: bash
-        run: |
-          sudo chmod -R u+w ~/runner/_work
-          sudo chown -R $(id -un):$(id -gn) ~/runner/_work
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -48,15 +43,44 @@ jobs:
             echo "tgt=release/bleota.bin" >> $GITHUB_OUTPUT
           fi
 
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
+
+      - name: Setup PlatformIO
+        id: setup-platformio
+        uses: ./.github/actions/setup-platformio
+        with:
+          platform: ${{ inputs.platform }}
+          read-only: true
+
       - name: Build ${{ inputs.platform }}
         id: build
-        uses: meshtastic/gh-action-firmware@main
-        with:
-          pio_platform: ${{ inputs.platform }}
-          pio_env: ${{ inputs.pio_env }}
-          pio_target: build
-          ota_firmware_source: ${{ steps.ota_dir.outputs.src || '' }}
-          ota_firmware_target: ${{ steps.ota_dir.outputs.tgt || '' }}
+        shell: bash
+        run: |
+          MT_ENV=${{ inputs.pio_env }}
+          MT_PLATFORM= ${{ inputs.platform }}
+          MT_OTA_FIRMWARE_SOURCE=${{ steps.ota_dir.outputs.src || '' }}
+          MT_OTA_FIRMWARE_TARGET=${{ steps.ota_dir.outputs.tgt || '' }}
+
+          if [[ "$MT_PLATFORM" == esp32* ]]; then
+              MT_PLATFORM="esp32"
+          elif [[ "$MT_PLATFORM" == nrf52* ]]; then
+              MT_PLATFORM="nrf52"
+          elif [[ "$MT_PLATFORM" == rp2040 ]] || [[ "$MT_PLATFORM" == rp2350 ]]; then
+              MT_PLATFORM="rp2xx0"
+          elif [[ "$MT_PLATFORM" == stm32 ]]; then
+              # Remove when stm32 has been fully renamed to stm32wl
+              MT_PLATFORM="stm32wl"
+          fi
+
+          echo "Building PlatformIO environment: $MT_ENV"
+          /workspace/bin/build-"${MT_PLATFORM}".sh "$MT_ENV"
+          echo "Build artifacts are located at: $PLATFORMIO_BUILD_DIR"
+
+          if [ -n "$MT_OTA_FIRMWARE_SOURCE" ] && [ -n "$MT_OTA_FIRMWARE_TARGET" ]; then
+              echo "Downloading OTA firmware $MT_OTA_FIRMWARE_SOURCE from https://github.com/meshtastic/firmware-ota"
+              curl -L "https://github.com/meshtastic/firmware-ota/releases/download/latest/$MT_OTA_FIRMWARE_SOURCE" -o "$MT_OTA_FIRMWARE_TARGET"
+          fi
 
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4

@@ -2,14 +2,14 @@ name: Setup PlatformIO with S3 cache
 description: Install and restore PlatformIO dependencies using S3 cache
 
 inputs:
-  arch:
-    description: Architecture to build for
+  platform:
+    description: Platform to build for
     required: true
   check-only:
     description: Only check cache status without downloading cache or installing dependencies
     required: false
     default: "false"
-  readonly:
+  read-only:
     description: Only restore cache if it exists, do not install dependencies if cache miss
     required: false
     default: "false"
@@ -42,16 +42,16 @@ runs:
           ~/.platformio
           .pio/libdeps
         key: |
-          setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ inputs.arch }}-${{ steps.date.outputs.current_date }}
+          setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ inputs.platform }}-${{ steps.date.outputs.current_date }}
         restore-keys: |
-          setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ inputs.arch }}-
+          setup-platformio-${{ runner.os }}-${{ runner.arch }}-${{ inputs.platform }}-
         lookup-only: ${{ inputs.check-only == 'true' }}
 
-    - name: Check cache requirement for readonly mode
-      if: inputs.readonly == 'true' && steps.cache.outputs.cache-hit != 'true'
+    - name: Check cache requirement for read-only mode
+      if: inputs.read-only == 'true' && steps.cache.outputs.cache-hit != 'true'
       shell: bash
       run: |
-        echo "Error: readonly mode enabled but cache was not found"
+        echo "Error: read-only mode enabled but cache was not found"
         echo "Cache hit: ${{ steps.cache.outputs.cache-hit }}"
         exit 1
 
@@ -60,7 +60,7 @@ runs:
       run: |
         echo "Cache hit: ${{ steps.cache.outputs.cache-hit }}"
         if [ "${{ inputs.check-only }}" == "true" ]; then
-          echo "Check-only mode enabled, skipping remaining steps"
+          echo "check-only mode enabled, skipping remaining steps"
           exit 0
         fi
 
@@ -75,11 +75,11 @@ runs:
         pip install -U meshtastic --pre --no-build-isolation
 
     - name: Install PlatformIO dependencies
-      if: inputs.check-only != 'true' && inputs.readonly != 'true'
+      if: inputs.check-only != 'true' && inputs.read-only != 'true'
       shell: bash
       run: |
         pio upgrade
-        TARGETS=$(./bin/generate_ci_matrix.py ${{ inputs.arch }})
+        TARGETS=$(./bin/generate_ci_matrix.py ${{ inputs.platform }})
         echo "$TARGETS" | jq -r '.[]' | while read -r env; do
             echo "Gathering environment: $env"
             # Retry up to 3 times on failure

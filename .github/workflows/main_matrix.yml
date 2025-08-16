@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch:
+        platform:
           - esp32
           - esp32s3
           - esp32c3
@@ -59,7 +59,7 @@ jobs:
         id: setup-platformio
         uses: ./.github/actions/setup-platformio
         with:
-          arch: ${{ matrix.arch }}
+          platform: ${{ matrix.platform }}
           check-only: true
 
       - name: Check PlatformIO cache exists
@@ -80,12 +80,12 @@ jobs:
         id: jsonStep
         run: |
           if [[ "$GITHUB_HEAD_REF" == "" ]]; then
-            TARGETS=$(./bin/generate_ci_matrix.py ${{matrix.arch}})
+            TARGETS=$(./bin/generate_ci_matrix.py ${{matrix.platform}})
           else  
-            TARGETS=$(./bin/generate_ci_matrix.py ${{matrix.arch}} pr)
+            TARGETS=$(./bin/generate_ci_matrix.py ${{matrix.platform}} pr)
           fi
           echo "Name: $GITHUB_REF_NAME Base: $GITHUB_BASE_REF Ref: $GITHUB_REF Targets: $TARGETS"
-          echo "${{matrix.arch}}=$(jq -cn --argjson environments "$TARGETS" '{board: $environments}')" >> $GITHUB_OUTPUT
+          echo "${{matrix.platform}}=$(jq -cn --argjson environments "$TARGETS" '{board: $environments}')" >> $GITHUB_OUTPUT
     outputs:
       esp32: ${{ steps.jsonStep.outputs.esp32 }}
       esp32s3: ${{ steps.jsonStep.outputs.esp32s3 }}
@@ -207,16 +207,16 @@ jobs:
   #     pio_env: ${{ matrix.board }}
   #     platform: rp2350
 
-  # build-stm32:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.stm32) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: stm32
+  build-stm32:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.stm32) }}
+    uses: ./.github/workflows/build_firmware.yml
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: stm32
 
   # gather-artifacts:
   #   permissions:
