@@ -63,21 +63,20 @@ jobs:
         uses: ./.github/actions/setup-platformio
         with:
           platform: ${{ matrix.platform }}
-          check-only: false
-          read-only: false
+          check-only: true
 
-      # - name: Check PlatformIO cache exists
-      #   if: steps.setup-platformio.outputs.cache-hit != 'true'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   run: |
-      #     echo "PlatformIO not found, dispatching daily setup workflow..."
-      #     if [[ "${{ steps.setup-platformio.outputs.cache-hit }}" != "true" ]]; then
-      #       echo "should-skip=true" >> $GITHUB_OUTPUT
-      #       echo "PlatformIO cache not found, marking job for skip"
-      #     else
-      #       echo "should-skip=false" >> $GITHUB_OUTPUT
-      #     fi
+      - name: Check PlatformIO cache exists
+        if: steps.setup-platformio.outputs.cache-hit != 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "PlatformIO not found"
+          if [[ "${{ steps.setup-platformio.outputs.cache-hit }}" != "true" ]]; then
+            echo "should-skip=true" >> $GITHUB_OUTPUT
+            echo "PlatformIO cache not found, marking job for skip"
+          else
+            echo "should-skip=false" >> $GITHUB_OUTPUT
+          fi
 
       - name: Generate matrix
         id: jsonStep
