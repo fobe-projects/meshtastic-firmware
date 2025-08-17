@@ -1,0 +1,41 @@
+name: Test Upload Artifact Action
+
+on:
+  workflow_dispatch:
+env:
+  FOBE_S3_ARTIFACT_BUCKET: fobe-gars-artifact
+  FOBE_S3_ARTIFACT_HOST: ${{ secrets.FOBE_GARS_S3_ENDPOINT_HOST }}
+  FOBE_S3_ARTIFACT_PORT: ${{ secrets.FOBE_GARS_S3_ENDPOINT_PORT }}
+  FOBE_S3_ARTIFACT_ACCESS_KEY: ${{ secrets.FOBE_GARS_S3_ACCESS_KEY }}
+  FOBE_S3_ARTIFACT_SECRET_KEY: ${{ secrets.FOBE_GARS_S3_SECRET_KEY }}
+  RUNS_ON_S3_BUCKET_CACHE: fobe-gars-cache
+  RUNS_ON_AWS_REGION: cn-sounth-fobe-1
+  AWS_ACCESS_KEY_ID: ${{ secrets.FOBE_GARS_S3_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.FOBE_GARS_S3_SECRET_KEY }}
+  AWS_ENDPOINT_URL: "http://${{ secrets.FOBE_GARS_S3_ENDPOINT_HOST }}:${{ secrets.FOBE_GARS_S3_ENDPOINT_PORT }}"
+  RUNS_ON_S3_FORCE_PATH_STYLE: "true"
+jobs:
+  test-upload-artifact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare test files
+        run: |
+          mkdir -p test-artifacts
+          echo "hello world" > test-artifacts/hello.txt
+          echo "another file" > test-artifacts/another.txt
+
+      - name: Test upload-artifact action
+        uses: ./.github/actions/upload-artifact
+        with:
+          name: test-artifact
+          path: |
+            debian/*
+            bin/*.sh
+            bin/config-dist.yaml
+          overwrite: "true"
+          retention-days: 2
+          include-hidden-files: "false"
