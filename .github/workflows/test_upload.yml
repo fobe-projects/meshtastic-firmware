@@ -16,8 +16,7 @@ env:
   RUNS_ON_S3_FORCE_PATH_STYLE: "true"
 jobs:
   test-upload-artifact:
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v4
