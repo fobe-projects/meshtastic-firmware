@@ -29,7 +29,7 @@ env:
 jobs:
   pio-build:
     name: build-${{ inputs.platform }}
-    runs-on: ubuntu-24.04
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
         with:
@@ -56,7 +56,7 @@ jobs:
 
       - name: Build ${{ inputs.platform }}
         id: build
-        uses: meshtastic/gh-action-firmware@main
+        uses: ./.github/actions/build-variant-docker
         with:
           pio_platform: ${{ inputs.platform }}
           pio_env: ${{ inputs.pio_env }}

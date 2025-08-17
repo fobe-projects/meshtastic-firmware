@@ -53,7 +53,8 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
-      - uses: ./.github/actions/setup-python
+      - name: Setup Python
+        uses: ./.github/actions/setup-python
       - run: pip install -U platformio
       - name: Generate matrix
         id: jsonStep
@@ -106,17 +107,17 @@ jobs:
   # - name: Check ${{ matrix.board }}
   #   run: bin/check-all.sh ${{ matrix.board }}
 
-  # build-esp32:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.esp32) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: esp32
+  build-esp32:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.esp32) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: esp32
 
   # build-esp32s3:
   #   needs: [setup, version]
