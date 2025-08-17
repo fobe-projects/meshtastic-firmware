@@ -50,6 +50,11 @@ jobs:
           - check
     runs-on: self-hosted
     steps:
+      - name: Fix workspace permissions
+        if: always()
+        shell: bash
+        run: |
+          sudo chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
       - uses: actions/checkout@v5
       - name: Setup Python
         uses: ./.github/actions/setup-python
