@@ -66,10 +66,7 @@ runs:
       run: |
         set -euo pipefail
         shopt -s globstar nullglob dotglob
-
         FILE_LIST=()
-
-        # 递归收集文件，包括隐藏文件
         add_files() {
           local dir="$1"
           for f in "$dir"/* "$dir"/.*; do
@@ -86,10 +83,7 @@ runs:
             fi
           done
         }
-
-        # 安全展开通配符路径
         eval "PATHS=(${{ inputs.path }})"
-
         for match in "${PATHS[@]}"; do
           if [[ -d "$match" && "${{ inputs.include-hidden-files }}" == "true" ]]; then
             add_files "$match"
@@ -97,15 +91,11 @@ runs:
             FILE_LIST+=("$match")
           fi
         done
-
         if [ ${#FILE_LIST[@]} -eq 0 ]; then
           echo "No files found for path(s): ${{ inputs.path }}"
           exit 0
         fi
-
-        # 打包 zip
         zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}"
-
         echo "Artifact created locally: artifact.zip"
     - uses: ./.github/actions/setup-minio
     - name: Upload to MinIO
@@ -113,9 +103,7 @@ runs:
       run: |
         set -euo pipefail
         export MC_HOST_artifact="http://$FOBE_S3_ARTIFACT_ACCESS_KEY:$FOBE_S3_ARTIFACT_SECRET_KEY@$FOBE_S3_ARTIFACT_HOST:$FOBE_S3_ARTIFACT_PORT"
-
         DEST="artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}.zip"
-
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
             echo "Artifact already exists. Overwriting..."
@@ -125,5 +113,4 @@ runs:
             exit 1
           fi
         fi
-
         mc cp artifact.zip "$DEST"
