@@ -1,4 +1,6 @@
 name: CI
+permissions:
+  contents: read
 concurrency:
   group: ci-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -51,7 +53,6 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Fix workspace permissions
-        if: always()
         shell: bash
         run: |
           sudo chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
@@ -83,6 +84,10 @@ jobs:
   version:
     runs-on: self-hosted
     steps:
+      - name: Fix workspace permissions
+        shell: bash
+        run: |
+          sudo chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
       - uses: actions/checkout@v5
       - name: Get release version string
         run: |
