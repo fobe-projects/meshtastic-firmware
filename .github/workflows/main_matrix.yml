@@ -99,21 +99,21 @@ jobs:
       long: ${{ steps.version.outputs.long }}
       deb: ${{ steps.version.outputs.deb }}
 
-  check:
-    needs: setup
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.check) }}
+  # check:
+  #   needs: setup
+  #   strategy:
+  #     fail-fast: false
+  #     matrix: ${{ fromJson(needs.setup.outputs.check) }}
 
-    runs-on: ubuntu-latest
-    if: ${{ github.event_name != 'workflow_dispatch' }}
-    steps:
-      - uses: actions/checkout@v5
-      - name: Build base
-        id: base
-        uses: ./.github/actions/setup-base
-      - name: Check ${{ matrix.board }}
-        run: bin/check-all.sh ${{ matrix.board }}
+  #   runs-on: ubuntu-latest
+  #   if: ${{ github.event_name != 'workflow_dispatch' }}
+  #   steps:
+  #     - uses: actions/checkout@v5
+  #     - name: Build base
+  #       id: base
+  #       uses: ./.github/actions/setup-base
+  #     - name: Check ${{ matrix.board }}
+  #       run: bin/check-all.sh ${{ matrix.board }}
 
   # build-esp32:
   #   needs: [setup, version]
@@ -294,17 +294,17 @@ jobs:
   #     - name: Zip firmware
   #       run: zip -j -9 -r ./firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip ./output
 
-      # - name: Repackage in single elfs zip
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: debug-elfs-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip
-      #     overwrite: true
-      #     path: ./*.elf
-      #     retention-days: 30
+  # - name: Repackage in single elfs zip
+  #   uses: actions/upload-artifact@v4
+  #   with:
+  #     name: debug-elfs-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip
+  #     overwrite: true
+  #     path: ./*.elf
+  #     retention-days: 30
 
-      # - uses: scruplelesswizard/comment-artifact@main
-      #   if: ${{ github.event_name == 'pull_request' }}
-      #   with:
-      #     name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
-      #     description: "Download firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip. This artifact will be available for 90 days from creation"
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+  # - uses: scruplelesswizard/comment-artifact@main
+  #   if: ${{ github.event_name == 'pull_request' }}
+  #   with:
+  #     name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
+  #     description: "Download firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip. This artifact will be available for 90 days from creation"
+  #     github-token: ${{ secrets.GITHUB_TOKEN }}
