@@ -13,8 +13,6 @@ on:
   workflow_dispatch:
 
 env:
-  PIP_TRUSTED_HOST: ${{ secrets.FOBE_PIP_TRUSTED_HOST }}
-  PIP_INDEX_URL: ${{ secrets.FOBE_PIP_INDEX_URL }}
   ZSTD_NBTHREADS: 56
   RUNS_ON_S3_BUCKET_CACHE: fobe-gars-cache
   RUNS_ON_AWS_REGION: cn-sounth-fobe-1
