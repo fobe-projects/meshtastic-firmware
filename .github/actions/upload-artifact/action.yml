@@ -69,12 +69,24 @@ runs:
         while IFS= read -r line; do
           for f in $line; do
             FILE_LIST+=("$f")
-            if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d $f ]]; then
-              for hf in "$f"/.*; do
-                if [[ "$(basename "$hf")" != "." && "$(basename "$hf")" != ".." && -e "$hf" ]]; then
-                  FILE_LIST+=("$hf")
+            if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
+              if [[ -d $f ]]; then
+                for hf in "$f"/.*; do
+                  if [[ "$(basename "$hf")" != "." && "$(basename "$hf")" != ".." && -e "$hf" ]]; then
+                    FILE_LIST+=("$hf")
+                  fi
+                done
+              fi
+              if [[ "$f" == *"*"* ]]; then
+                parent_dir="${f%/*}"
+                if [[ -d $parent_dir ]]; then
+                  for hf in "$parent_dir"/.*; do
+                    if [[ "$(basename "$hf")" != "." && "$(basename "$hf")" != ".." && -e "$hf" ]]; then
+                      FILE_LIST+=("$hf")
+                    fi
+                  done
                 fi
-              done
+              fi
             fi
           done
         done <<< "${{ inputs.path }}"
