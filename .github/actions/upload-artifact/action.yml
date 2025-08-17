@@ -65,23 +65,36 @@ runs:
       shell: bash
       run: |
         set -euo pipefail
-        shopt -s globstar nullglob
+        shopt -s globstar nullglob dotglob
 
         FILE_LIST=()
+
+        # 递归收集文件，包括隐藏文件
+        add_files() {
+          local dir="$1"
+          for f in "$dir"/* "$dir"/.*; do
+            base="$(basename "$f")"
+            if [[ "$base" == "." || "$base" == ".." ]]; then
+              continue
+            fi
+            if [[ -d "$f" ]]; then
+              if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
+                add_files "$f"
+              fi
+            else
+              FILE_LIST+=("$f")
+            fi
+          done
+        }
 
         # 安全展开通配符路径
         eval "PATHS=(${{ inputs.path }})"
 
         for match in "${PATHS[@]}"; do
-          FILE_LIST+=("$match")
-
-          if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d "$match" ]]; then
-            for hf in "$match"/.*; do
-              base="$(basename "$hf")"
-              if [[ "$base" != "." && "$base" != ".." && -e "$hf" ]]; then
-                FILE_LIST+=("$hf")
-              fi
-            done
+          if [[ -d "$match" && "${{ inputs.include-hidden-files }}" == "true" ]]; then
+            add_files "$match"
+          elif [[ -e "$match" ]]; then
+            FILE_LIST+=("$match")
           fi
         done
 
@@ -90,11 +103,10 @@ runs:
           exit 0
         fi
 
-        if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
-          zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}"
-        else
-          zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}" -x ".*" -x "*/.*"
-        fi
+        # 打包 zip
+        zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}"
+
+        echo "Artifact created locally: artifact.zip"
     - uses: ./.github/actions/setup-minio
     - name: Upload to MinIO
       shell: bash
