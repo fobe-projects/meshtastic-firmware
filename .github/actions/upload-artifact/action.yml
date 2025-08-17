@@ -75,6 +75,9 @@ runs:
         while IFS= read -r line; do
           for f in $line; do
             FILE_LIST+=("$f")
+            if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d $f ]]; then
+              FILE_LIST+=("$f"/.*)
+            fi
           done
         done <<< "${{ inputs.path }}"
         if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
@@ -101,11 +104,9 @@ runs:
           fi
         fi
 
+        mc cp artifact.zip "$DEST"
+
         # Retention-days handling
         if [[ "${{ inputs.retention-days }}" != "0" ]]; then
-          echo "Adding metadata: retention-days=${{ inputs.retention-days }}"
-          mc cp --attr "X-Amz-Meta-Retention-Days=${{ inputs.retention-days }}" \
-            artifact.zip "$DEST"
-        else
-          mc cp artifact.zip "$DEST"
+          mc retention set "$DEST" GOVERNANCE "$${{ inputs.retention-days }}d"
         fi
