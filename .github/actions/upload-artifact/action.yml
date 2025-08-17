@@ -88,7 +88,7 @@ runs:
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
             echo "Artifact already exists. Overwriting..."
-            mc rm -f "$DEST"
+            mc rm "$DEST"
           else
             echo "::error::Artifact already exists at $DEST and overwrite=false"
             exit 1
