@@ -37,4 +37,4 @@ jobs:
             bin/config-dist.yaml
           overwrite: "true"
           retention-days: 2
-          include-hidden-files: "false"
+          include-hidden-files: true
