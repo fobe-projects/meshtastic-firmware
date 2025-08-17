@@ -15,21 +15,10 @@ on:
 
 permissions: read-all
 
-env:
-  PIP_TRUSTED_HOST: ${{ secrets.FOBE_PIP_TRUSTED_HOST }}
-  PIP_INDEX_URL: ${{ secrets.FOBE_PIP_INDEX_URL }}
-  ZSTD_NBTHREADS: 56
-  RUNS_ON_S3_BUCKET_CACHE: fobe-gars-cache
-  RUNS_ON_AWS_REGION: cn-sounth-fobe-1
-  AWS_ACCESS_KEY_ID: ${{ secrets.FOBE_GARS_S3_ACCESS_KEY }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.FOBE_GARS_S3_SECRET_KEY }}
-  AWS_ENDPOINT_URL: "http://${{ secrets.FOBE_GARS_S3_ENDPOINT_HOST }}:${{ secrets.FOBE_GARS_S3_ENDPOINT_PORT }}"
-  RUNS_ON_S3_FORCE_PATH_STYLE: "true"
-
 jobs:
   pio-build:
     name: build-${{ inputs.platform }}
-    runs-on: self-hosted
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
         with:
@@ -54,39 +43,15 @@ jobs:
             echo "tgt=release/bleota.bin" >> $GITHUB_OUTPUT
           fi
 
-      - name: Setup Python
-        uses: ./.github/actions/setup-python
-
       - name: Build ${{ inputs.platform }}
         id: build
-        shell: bash
-        env:
-          MT_ENV: ${{ inputs.pio_env }}
-          MT_PLATFORM: ${{ inputs.platform }}
-          MT_TARGET: build
-          MT_OTA_FIRMWARE_SOURCE: ${{ steps.ota_dir.outputs.src || '' }}
-          MT_OTA_FIRMWARE_TARGET: ${{ steps.ota_dir.outputs.tgt || '' }}
-          PLATFORMIO_BUILD_DIR: /workspace/.pio/build
-        run: |
-          MT_ENV=${{ inputs.pio_env }}
-          MT_PLATFORM=${{ inputs.platform }}
-          MT_OTA_FIRMWARE_SOURCE=${{ steps.ota_dir.outputs.src || '' }}
-          MT_OTA_FIRMWARE_TARGET=${{ steps.ota_dir.outputs.tgt || '' }}
-
-          docker run --rm \
-          --env GITHUB_ACTIONS \
-          --env XDG_CACHE_HOME \
-          --env MT_ENV \
-          --env MT_PLATFORM \
-          --env MT_TARGET \
-          --env MT_OTA_FIRMWARE_SOURCE \
-          --env MT_OTA_FIRMWARE_TARGET \
-          --env PLATFORMIO_BUILD_DIR \
-          -v $GITHUB_WORKSPACE:/workspace \
-          ghcr.mirror.dc.fobestudio.com/meshtastic/gh-action-firmware:master-${{ inputs.platform }}
-
-          sudo chmod -R u+w ~/runner/_work
-          sudo chown -R $(id -un):$(id -gn) ~/runner/_work
+        uses: meshtastic/gh-action-firmware@main
+        with:
+          pio_platform: ${{ inputs.platform }}
+          pio_env: ${{ inputs.pio_env }}
+          pio_target: build
+          ota_firmware_source: ${{ steps.ota_dir.outputs.src || '' }}
+          ota_firmware_target: ${{ steps.ota_dir.outputs.tgt || '' }}
 
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4
