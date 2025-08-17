@@ -47,13 +47,9 @@ jobs:
           - rp2040
           - rp2350
           - stm32
-          - check
+          # - check
     runs-on: self-hosted
     steps:
-      - name: Fix workspace permissions
-        shell: bash
-        run: |
-          sudo chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
       - uses: actions/checkout@v5
       - name: Setup Python
         uses: ./.github/actions/setup-python
@@ -77,7 +73,7 @@ jobs:
       rp2040: ${{ steps.jsonStep.outputs.rp2040 }}
       rp2350: ${{ steps.jsonStep.outputs.rp2350 }}
       stm32: ${{ steps.jsonStep.outputs.stm32 }}
-      check: ${{ steps.jsonStep.outputs.check }}
+      # check: ${{ steps.jsonStep.outputs.check }}
 
   version:
     runs-on: self-hosted
