@@ -53,12 +53,8 @@ jobs:
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
-
-      - name: Setup Python
-        uses: ./.github/actions/setup-python
-
+      - uses: ./.github/actions/setup-python
       - run: pip install -U platformio
-
       - name: Generate matrix
         id: jsonStep
         run: |
@@ -82,10 +78,8 @@ jobs:
 
   version:
     runs-on: self-hosted
-    needs: setup
     steps:
       - uses: actions/checkout@v5
-
       - name: Get release version string
         run: |
           echo "long=$(./bin/buildinfo.py long)" >> $GITHUB_OUTPUT
@@ -93,7 +87,6 @@ jobs:
         id: version
         env:
           BUILD_LOCATION: local
-
     outputs:
       long: ${{ steps.version.outputs.long }}
       deb: ${{ steps.version.outputs.deb }}
