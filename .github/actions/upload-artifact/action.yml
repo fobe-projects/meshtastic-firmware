@@ -64,22 +64,31 @@ runs:
       if: steps.collect.outputs.files_found == 'true'
       shell: bash
       run: |
+        set -euo pipefail
         shopt -s globstar nullglob
+
         FILE_LIST=()
-        while IFS= read -r line; do
-          for f in $line; do
-            for match in $f; do
-              FILE_LIST+=("$match")
-              if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d $match ]]; then
-                for hf in "$match"/.*; do
-                  if [[ "$(basename "$hf")" != "." && "$(basename "$hf")" != ".." && -e "$hf" ]]; then
-                    FILE_LIST+=("$hf")
-                  fi
-                done
-              fi
-            done
+
+        for path in ${{ inputs.path }}; do
+          for match in $path; do
+            FILE_LIST+=("$match")
+
+            if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d "$match" ]]; then
+              for hf in "$match"/.*; do
+                base="$(basename "$hf")"
+                if [[ "$base" != "." && "$base" != ".." && -e "$hf" ]]; then
+                  FILE_LIST+=("$hf")
+                fi
+              done
+            fi
           done
-        done <<< "${{ inputs.path }}"
+        done
+
+        if [ ${#FILE_LIST[@]} -eq 0 ]; then
+          echo "No files found for path(s): ${{ inputs.path }}"
+          exit 0
+        fi
+
         if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
           zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}"
         else
@@ -96,15 +105,6 @@ runs:
 
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
-            echo "Artifact already exists. Overwriting..."
-            mc rm -r --force "$DEST"
-          else
-            echo "::error::Artifact already exists at $DEST and overwrite=false"
-            exit 1
-          fi
-        fi
-
-        mc cp artifact.zip "$DEST"
             echo "Artifact already exists. Overwriting..."
             mc rm -r --force "$DEST"
           else
