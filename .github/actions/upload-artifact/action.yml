@@ -70,11 +70,17 @@ runs:
       if: steps.collect.outputs.files_found == 'true'
       shell: bash
       run: |
-        readarray -t PATHS <<< "${{ inputs.path }}"
+        shopt -s globstar nullglob
+        FILE_LIST=()
+        while IFS= read -r line; do
+          for f in $line; do
+            FILE_LIST+=("$f")
+          done
+        done <<< "${{ inputs.path }}"
         if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
-          zip -r -${{ inputs.compression-level }} artifact.zip "${PATHS[@]}"
+          zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}"
         else
-          zip -r -${{ inputs.compression-level }} artifact.zip "${PATHS[@]}" -x ".*" -x "*/.*"
+          zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}" -x ".*" -x "*/.*"
         fi
     - uses: ./.github/actions/setup-minio
     - name: Upload to MinIO
