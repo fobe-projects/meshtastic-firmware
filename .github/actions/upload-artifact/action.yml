@@ -108,5 +108,5 @@ runs:
 
         # Retention-days handling
         if [[ "${{ inputs.retention-days }}" != "0" ]]; then
-          mc retention set "$DEST" GOVERNANCE "${{ inputs.retention-days }}d"
+          mc retention set governance ${{ inputs.retention-days }}d "$DEST"
         fi
