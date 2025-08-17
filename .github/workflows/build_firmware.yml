@@ -64,6 +64,12 @@ jobs:
           ota_firmware_source: ${{ steps.ota_dir.outputs.src || '' }}
           ota_firmware_target: ${{ steps.ota_dir.outputs.tgt || '' }}
 
+      - name: Fix workspace permissions
+        if: always()
+        shell: bash
+        run: |
+          sudo chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
+
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4
         with:
