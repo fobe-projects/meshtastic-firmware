@@ -69,19 +69,20 @@ runs:
 
         FILE_LIST=()
 
-        for path in ${{ inputs.path }}; do
-          for match in $path; do
-            FILE_LIST+=("$match")
+        # 安全展开通配符路径
+        eval "PATHS=(${{ inputs.path }})"
 
-            if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d "$match" ]]; then
-              for hf in "$match"/.*; do
-                base="$(basename "$hf")"
-                if [[ "$base" != "." && "$base" != ".." && -e "$hf" ]]; then
-                  FILE_LIST+=("$hf")
-                fi
-              done
-            fi
-          done
+        for match in "${PATHS[@]}"; do
+          FILE_LIST+=("$match")
+
+          if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d "$match" ]]; then
+            for hf in "$match"/.*; do
+              base="$(basename "$hf")"
+              if [[ "$base" != "." && "$base" != ".." && -e "$hf" ]]; then
+                FILE_LIST+=("$hf")
+              fi
+            done
+          fi
         done
 
         if [ ${#FILE_LIST[@]} -eq 0 ]; then
