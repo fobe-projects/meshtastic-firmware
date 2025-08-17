@@ -115,89 +115,89 @@ jobs:
   #     - name: Check ${{ matrix.board }}
   #       run: bin/check-all.sh ${{ matrix.board }}
 
-  # build-esp32:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.esp32) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: esp32
+  build-esp32:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.esp32) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: esp32
 
-  # build-esp32s3:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.esp32s3) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: esp32s3
+  build-esp32s3:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.esp32s3) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: esp32s3
 
-  # build-esp32c3:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.esp32c3) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: esp32c3
+  build-esp32c3:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.esp32c3) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: esp32c3
 
-  # build-esp32c6:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.esp32c6) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: esp32c6
+  build-esp32c6:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.esp32c6) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: esp32c6
 
-  # build-nrf52840:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.nrf52840) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: nrf52840
+  build-nrf52840:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.nrf52840) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: nrf52840
 
-  # build-rp2040:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.rp2040) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: rp2040
+  build-rp2040:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.rp2040) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: rp2040
 
-  # build-rp2350:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.rp2350) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: rp2350
+  build-rp2350:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.rp2350) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: rp2350
 
   build-stm32:
     needs: [setup, version]
