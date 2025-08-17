@@ -68,26 +68,16 @@ runs:
         FILE_LIST=()
         while IFS= read -r line; do
           for f in $line; do
-            FILE_LIST+=("$f")
-            if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
-              if [[ -d $f ]]; then
-                for hf in "$f"/.*; do
+            for match in $f; do
+              FILE_LIST+=("$match")
+              if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d $match ]]; then
+                for hf in "$match"/.*; do
                   if [[ "$(basename "$hf")" != "." && "$(basename "$hf")" != ".." && -e "$hf" ]]; then
                     FILE_LIST+=("$hf")
                   fi
                 done
               fi
-              if [[ "$f" == *"*"* ]]; then
-                parent_dir="${f%/*}"
-                if [[ -d $parent_dir ]]; then
-                  for hf in "$parent_dir"/.*; do
-                    if [[ "$(basename "$hf")" != "." && "$(basename "$hf")" != ".." && -e "$hf" ]]; then
-                      FILE_LIST+=("$hf")
-                    fi
-                  done
-                fi
-              fi
-            fi
+            done
           done
         done <<< "${{ inputs.path }}"
         if [[ "${{ inputs.include-hidden-files }}" == "true" ]]; then
@@ -106,6 +96,15 @@ runs:
 
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
+            echo "Artifact already exists. Overwriting..."
+            mc rm -r --force "$DEST"
+          else
+            echo "::error::Artifact already exists at $DEST and overwrite=false"
+            exit 1
+          fi
+        fi
+
+        mc cp artifact.zip "$DEST"
             echo "Artifact already exists. Overwriting..."
             mc rm -r --force "$DEST"
           else
