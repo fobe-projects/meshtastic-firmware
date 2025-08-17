@@ -17,12 +17,6 @@ inputs:
         error: Fail the action with an error message
         ignore: Do not output any warnings or errors, the action does not fail
     default: warn
-  retention-days:
-    description: >
-      Duration after which artifact will expire in days. 0 means using default retention.
-
-      Minimum 1 day.
-      Maximum 90 days unless changed from the repository settings page.
   compression-level:
     description: >
       The level of compression for Zlib to be applied to the artifact archive.
@@ -92,7 +86,7 @@ runs:
         set -euo pipefail
         export MC_HOST_artifact="http://$FOBE_S3_ARTIFACT_ACCESS_KEY:$FOBE_S3_ARTIFACT_SECRET_KEY@$FOBE_S3_ARTIFACT_HOST:$FOBE_S3_ARTIFACT_PORT"
 
-        DEST="/artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}.zip"
+        DEST="artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}.zip"
 
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
@@ -105,8 +99,3 @@ runs:
         fi
 
         mc cp artifact.zip "$DEST"
-
-        # Retention-days handling
-        if [[ "${{ inputs.retention-days }}" != "0" ]]; then
-          mc retention set governance ${{ inputs.retention-days }}d "$DEST"
-        fi
