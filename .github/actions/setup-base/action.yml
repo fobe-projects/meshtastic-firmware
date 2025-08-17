@@ -16,44 +16,33 @@ runs:
       run: |
         sed -i 's/#-DBUILD_EPOCH=$UNIX_TIME/-DBUILD_EPOCH=$UNIX_TIME/' platformio.ini
 
-    # - name: Install dependencies
-    #   shell: bash
-    #   run: |
-    #     sudo apt-get -y update --fix-missing
-    #     sudo apt-get install -y cppcheck libbluetooth-dev libgpiod-dev libyaml-cpp-dev lsb-release
+    - name: Install dependencies
+      shell: bash
+      run: |
+        sudo apt-get -y update --fix-missing
+        sudo apt-get install -y cppcheck libbluetooth-dev libgpiod-dev libyaml-cpp-dev lsb-release
 
     - name: Setup Python
       uses: actions/setup-python@v5
       with:
         python-version: 3.x
-    - name: Get pip cache directory
-      shell: bash
-      id: pip-cache
-      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
-    - name: Ensure cache parent directory exists
+
+    - name: Gathering Python tools information
+      id: python-info
       shell: bash
       run: |
-        mkdir -p $(dirname ${{ steps.pip-cache.outputs.dir }})
-    - name: Cache pip dependencies on NFS
-      uses: actions-self-hosted/cache@v4
+        echo "python-version=$(python --version | cut -d' ' -f2)" >> $GITHUB_OUTPUT
+
+    - name: Cache Python tools
+      uses: runs-on/cache@v4
       with:
         path: |
-          ${{ steps.pip-cache.outputs.dir }}
+          ~/.cache/pip
           .github/actions/**
           **.ini
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        cache-dir: /mnt/nfs/${{ github.repository }}/pip-cache
-
-    - name: Ensure cache parent directory exists
-      shell: bash
-      run: |
-        mkdir -p ./.pio/libdeps/${{ matrix.board }}
-    - name: Cache pio dependencies on NFS
-      uses: actions-self-hosted/cache@v4
-      with:
-        path: ./.pio/libdeps/${{ matrix.board }}
-        key: ${{ runner.os }}-pio-${{ matrix.board }}-${{ hashFiles('**/requirements.txt') }}
-        cache-dir: /mnt/nfs/${{ github.repository }}/pio-cache
+        key: setup-python-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python-info.outputs.python-version }}-pip-${{ hashFiles('**/requirements.txt', '**.ini', '.github/actions/**') }}
+        restore-keys: |
+          setup-python-${{ runner.os }}-${{ runner.arch }}-python-${{ steps.python-info.outputs.python-version }}-pip-
 
     - name: Upgrade python tools
       shell: bash
@@ -68,4 +57,3 @@ runs:
       shell: bash
       run: |
         pio upgrade
-        pio pkg install --environment ${{ matrix.board }}
