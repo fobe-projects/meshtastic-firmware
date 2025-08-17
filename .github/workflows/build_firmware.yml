@@ -16,7 +16,11 @@ on:
 permissions: read-all
 
 env:
-  ZSTD_NBTHREADS: 56
+  FOBE_S3_ARTIFACT_BUCKET: fobe-gars-artifact
+  FOBE_S3_ARTIFACT_HOST: ${{ secrets.FOBE_GARS_S3_ENDPOINT_HOST }}
+  FOBE_S3_ARTIFACT_PORT: ${{ secrets.FOBE_GARS_S3_ENDPOINT_PORT }}
+  FOBE_S3_ARTIFACT_ACCESS_KEY: ${{ secrets.FOBE_GARS_S3_ACCESS_KEY }}
+  FOBE_S3_ARTIFACT_SECRET_KEY: ${{ secrets.FOBE_GARS_S3_SECRET_KEY }}
   RUNS_ON_S3_BUCKET_CACHE: fobe-gars-cache
   RUNS_ON_AWS_REGION: cn-sounth-fobe-1
   AWS_ACCESS_KEY_ID: ${{ secrets.FOBE_GARS_S3_ACCESS_KEY }}
@@ -69,7 +73,7 @@ jobs:
           sudo chown -R $(id -u):$(id -g) $GITHUB_WORKSPACE
 
       - name: Store binaries as an artifact
-        uses: actions/upload-artifact@v4
+        uses: ./.github/actions/upload-artifact
         with:
           name: firmware-${{ inputs.platform }}-${{ inputs.pio_env }}-${{ inputs.version }}.zip
           overwrite: true

@@ -199,100 +199,100 @@ jobs:
   #     pio_env: ${{ matrix.board }}
   #     platform: rp2350
 
-  # build-stm32:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.stm32) }}
-  #   uses: ./.github/workflows/build_firmware.yml
-  #   secrets: inherit
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: stm32
-
-  gather-artifacts:
-    permissions:
-      contents: write
-      pull-requests: write
+  build-stm32:
+    needs: [setup, version]
     strategy:
       fail-fast: false
-      matrix:
-        arch:
-          - esp32
-          - esp32s3
-          - esp32c3
-          - esp32c6
-          - nrf52840
-          - rp2040
-          - rp2350
-          - stm32
-    runs-on: self-hosted
-    needs:
-      [
-        version,
-        build-esp32,
-        build-esp32s3,
-        build-esp32c3,
-        build-esp32c6,
-        build-nrf52840,
-        build-rp2040,
-        build-rp2350,
-        build-stm32,
-      ]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-        with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+      matrix: ${{ fromJson(needs.setup.outputs.stm32) }}
+    uses: ./.github/workflows/build_firmware.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: stm32
 
-      - uses: actions/download-artifact@v5
-        with:
-          path: ./
-          pattern: firmware-${{matrix.arch}}-*
-          merge-multiple: true
+  # gather-artifacts:
+  #   permissions:
+  #     contents: write
+  #     pull-requests: write
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       arch:
+  #         - esp32
+  #         - esp32s3
+  #         - esp32c3
+  #         - esp32c6
+  #         - nrf52840
+  #         - rp2040
+  #         - rp2350
+  #         - stm32
+  #   runs-on: self-hosted
+  #   needs:
+  #     [
+  #       version,
+  #       build-esp32,
+  #       build-esp32s3,
+  #       build-esp32c3,
+  #       build-esp32c6,
+  #       build-nrf52840,
+  #       build-rp2040,
+  #       build-rp2350,
+  #       build-stm32,
+  #     ]
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v5
+  #       with:
+  #         ref: ${{github.event.pull_request.head.ref}}
+  #         repository: ${{github.event.pull_request.head.repo.full_name}}
 
-      - name: Display structure of downloaded files
-        run: ls -R
+  #     - uses: actions/download-artifact@v5
+  #       with:
+  #         path: ./
+  #         pattern: firmware-${{matrix.arch}}-*
+  #         merge-multiple: true
 
-      - name: Move files up
-        run: mv -b -t ./ ./bin/device-*.sh ./bin/device-*.bat
+  #     - name: Display structure of downloaded files
+  #       run: ls -R
 
-      - name: Repackage in single firmware zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
-          overwrite: true
-          path: |
-            ./firmware-*.bin
-            ./firmware-*.uf2
-            ./firmware-*.hex
-            ./firmware-*-ota.zip
-            ./device-*.sh
-            ./device-*.bat
-            ./littlefs-*.bin
-            ./bleota*bin
-            ./Meshtastic_nRF52_factory_erase*.uf2
-          retention-days: 30
+  #     - name: Move files up
+  #       run: mv -b -t ./ ./bin/device-*.sh ./bin/device-*.bat
 
-      - uses: actions/download-artifact@v5
-        with:
-          name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
-          merge-multiple: true
-          path: ./output
+  #     - name: Repackage in single firmware zip
+  #       uses: actions/upload-artifact@v4
+  #       with:
+  #         name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
+  #         overwrite: true
+  #         path: |
+  #           ./firmware-*.bin
+  #           ./firmware-*.uf2
+  #           ./firmware-*.hex
+  #           ./firmware-*-ota.zip
+  #           ./device-*.sh
+  #           ./device-*.bat
+  #           ./littlefs-*.bin
+  #           ./bleota*bin
+  #           ./Meshtastic_nRF52_factory_erase*.uf2
+  #         retention-days: 30
 
-      # For diagnostics
-      - name: Show artifacts
-        run: ls -lR
+  #     - uses: actions/download-artifact@v5
+  #       with:
+  #         name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
+  #         merge-multiple: true
+  #         path: ./output
 
-      - name: Device scripts permissions
-        run: |
-          chmod +x ./output/device-install.sh
-          chmod +x ./output/device-update.sh
+  #     # For diagnostics
+  #     - name: Show artifacts
+  #       run: ls -lR
 
-      - name: Zip firmware
-        run: zip -j -9 -r ./firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip ./output
+  #     - name: Device scripts permissions
+  #       run: |
+  #         chmod +x ./output/device-install.sh
+  #         chmod +x ./output/device-update.sh
+
+  #     - name: Zip firmware
+  #       run: zip -j -9 -r ./firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip ./output
 
       # - name: Repackage in single elfs zip
       #   uses: actions/upload-artifact@v4
