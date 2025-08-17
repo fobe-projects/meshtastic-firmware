@@ -70,7 +70,11 @@ runs:
           for f in $line; do
             FILE_LIST+=("$f")
             if [[ "${{ inputs.include-hidden-files }}" == "true" ]] && [[ -d $f ]]; then
-              FILE_LIST+=("$f"/.*)
+              for hf in "$f"/.*; do
+                if [[ "$(basename "$hf")" != "." && "$(basename "$hf")" != ".." && -e "$hf" ]]; then
+                  FILE_LIST+=("$hf")
+                fi
+              done
             fi
           done
         done <<< "${{ inputs.path }}"
