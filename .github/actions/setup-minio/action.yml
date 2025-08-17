@@ -39,7 +39,7 @@ runs:
           echo "Downloading MinIO client from $URL to $TOOL_DIR"
           curl -sSL "$URL" -o "$TOOL_DIR/mc"
           chmod +x "$TOOL_DIR/mc"
-          echo "$TOOL_DIR" >> $GITHUB_PATH
         else
           echo "MinIO client already exists at $TOOL_DIR/mc, skipping download."
         fi
+        echo "$TOOL_DIR" >> $GITHUB_PATH
