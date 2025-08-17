@@ -92,7 +92,7 @@ runs:
         set -euo pipefail
         export MC_HOST_artifact="http://$FOBE_S3_ARTIFACT_ACCESS_KEY:$FOBE_S3_ARTIFACT_SECRET_KEY@$FOBE_S3_ARTIFACT_HOST:$FOBE_S3_ARTIFACT_PORT"
 
-        DEST="artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}.zip"
+        DEST="/artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}.zip"
 
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
