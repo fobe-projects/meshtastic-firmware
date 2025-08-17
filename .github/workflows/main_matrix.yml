@@ -289,17 +289,17 @@ jobs:
       - name: Zip firmware
         run: zip -j -9 -r ./firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip ./output
 
-      - name: Repackage in single elfs zip
-        uses: actions/upload-artifact@v4
-        with:
-          name: debug-elfs-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip
-          overwrite: true
-          path: ./*.elf
-          retention-days: 30
+      # - name: Repackage in single elfs zip
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: debug-elfs-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip
+      #     overwrite: true
+      #     path: ./*.elf
+      #     retention-days: 30
 
-      - uses: scruplelesswizard/comment-artifact@main
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
-          description: "Download firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip. This artifact will be available for 90 days from creation"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+      # - uses: scruplelesswizard/comment-artifact@main
+      #   if: ${{ github.event_name == 'pull_request' }}
+      #   with:
+      #     name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
+      #     description: "Download firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip. This artifact will be available for 90 days from creation"
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
