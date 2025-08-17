@@ -103,4 +103,3 @@ runs:
         else
           mc cp artifact.zip "$DEST"
         fi
-        fi
