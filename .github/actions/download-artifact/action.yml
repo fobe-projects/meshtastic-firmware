@@ -85,8 +85,8 @@ runs:
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
             echo "targetM: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART"
-            unzip -o "$DEST/$ART/$ART" -d "$DEST/$ART"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST"
+            unzip -o "$DEST/$ART" -d "$DEST"
             rm "$DEST/$ART/$ART"
           done
         fi

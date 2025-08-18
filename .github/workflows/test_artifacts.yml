@@ -37,9 +37,6 @@ jobs:
           path: ./debian
           overwrite: "true"
 
-      - name: Wait some time
-        run: sleep 5
-
       - name: Download all artifacts to up-test
         uses: ./.github/actions/download-artifact
         with:
