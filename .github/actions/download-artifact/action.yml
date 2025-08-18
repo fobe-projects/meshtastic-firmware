@@ -43,19 +43,19 @@ runs:
       shell: bash
       run: |
         export MC_HOST_artifact="http://$FOBE_S3_ARTIFACT_ACCESS_KEY:$FOBE_S3_ARTIFACT_SECRET_KEY@$FOBE_S3_ARTIFACT_HOST:$FOBE_S3_ARTIFACT_PORT"
+
         OWNER="${{ github.repository_owner }}"
         REPO="${{ github.event.repository.name }}"
         RUN_ID="${{ github.run_id }}"
         BUCKET="$FOBE_S3_ARTIFACT_BUCKET"
         DEST="${{ steps.setpath.outputs.download_path }}"
+
         mkdir -p "$DEST"
 
         if [ -n "${{ inputs.name }}" ]; then
-          echo "指定 name: ${{ inputs.name }}"
           ARTIFACTS=("${{ inputs.name }}")
         else
           ARTIFACT_PATH="artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/"
-          echo "未指定 name，ARTIFACT_PATH: $ARTIFACT_PATH"
           if [ -n "${{ inputs.pattern }}" ]; then
             echo "使用 pattern: ${{ inputs.pattern }}"
             echo "mc ls \"$ARTIFACT_PATH\" | awk '{print \$NF}' | grep -E \"${{ inputs.pattern }}\""
@@ -76,6 +76,7 @@ runs:
 
         if [[ "${{ inputs.merge-multiple }}" == "true" || ${#ARTIFACTS[@]} -eq 1 ]]; then
           for ART in "${ARTIFACTS[@]}"; do
+            echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip"
             mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART.zip"
             unzip -o "$DEST/$ART.zip" -d "$DEST"
             rm "$DEST/$ART.zip"
@@ -83,6 +84,7 @@ runs:
         else
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
+            echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip"
             mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART/$ART.zip"
             unzip -o "$DEST/$ART/$ART.zip" -d "$DEST/$ART"
             rm "$DEST/$ART/$ART.zip"
