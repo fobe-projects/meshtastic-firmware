@@ -50,6 +50,11 @@ runs:
         BUCKET="$FOBE_S3_ARTIFACT_BUCKET"
         DEST="${{ steps.setpath.outputs.download_path }}"
 
+        # 处理DEST为本地路径（如 test-up -> ./test-up）
+        if [[ "$DEST" != /* && "$DEST" != ./* ]]; then
+          DEST="./$DEST"
+        fi
+
         mkdir -p "$DEST"
 
         if [ -n "${{ inputs.name }}" ]; then
