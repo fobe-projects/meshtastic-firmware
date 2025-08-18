@@ -76,18 +76,18 @@ runs:
 
         if [[ "${{ inputs.merge-multiple }}" == "true" || ${#ARTIFACTS[@]} -eq 1 ]]; then
           for ART in "${ARTIFACTS[@]}"; do
-            echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART.zip"
-            unzip -o "$DEST/$ART.zip" -d "$DEST"
-            rm "$DEST/$ART.zip"
+            echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/$ART"
+            unzip -o "$DEST/$ART" -d "$DEST"
+            rm "$DEST/$ART"
           done
         else
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
-            echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART/$ART.zip"
-            unzip -o "$DEST/$ART/$ART.zip" -d "$DEST/$ART"
-            rm "$DEST/$ART/$ART.zip"
+            echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART/$ART"
+            unzip -o "$DEST/$ART/$ART" -d "$DEST/$ART"
+            rm "$DEST/$ART/$ART"
           done
         fi
 
