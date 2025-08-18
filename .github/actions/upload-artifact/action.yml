@@ -96,6 +96,7 @@ runs:
           exit 0
         fi
 
+        mkdir -p "$RUNNER_TEMP/artifact/${{ github.run_id }}"
         DEST_LOCAL="$RUNNER_TEMP/artifact/${{ github.run_id }}/${{ inputs.name }}.zip"
         zip -r -${{ inputs.compression-level }} "$DEST_LOCAL" "${FILE_LIST[@]}"
         echo "Artifact created locally: $DEST_LOCAL"
@@ -116,3 +117,4 @@ runs:
           fi
         fi
         mc cp "$DEST_LOCAL" "$DEST"
+        rm -rf "$RUNNER_TEMP/artifact/${{ github.run_id }}"
