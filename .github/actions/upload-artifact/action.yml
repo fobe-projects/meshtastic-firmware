@@ -67,6 +67,8 @@ runs:
       run: |
         shopt -s globstar nullglob dotglob
         FILE_LIST=()
+        HAS_DIR=false
+        HAS_FILE=false
         add_files() {
           local dir="$1"
           for f in "$dir"/* "$dir"/.*; do
@@ -85,9 +87,11 @@ runs:
         }
         eval "PATHS=(${{ inputs.path }})"
         for match in "${PATHS[@]}"; do
-          if [[ -d "$match" && "${{ inputs.include-hidden-files }}" == "true" ]]; then
-            add_files "$match"
+          if [[ -d "$match" ]]; then
+            HAS_DIR=true
+            FILE_LIST+=("$match")
           elif [[ -e "$match" ]]; then
+            HAS_FILE=true
             FILE_LIST+=("$match")
           fi
         done
@@ -98,7 +102,12 @@ runs:
 
         mkdir -p "$RUNNER_TEMP/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/artifact"
         DEST_LOCAL="$RUNNER_TEMP/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/artifact/${{ inputs.name }}.zip"
-        zip -r -${{ inputs.compression-level }} "$DEST_LOCAL" "${FILE_LIST[@]}"
+        # If any directory is present, keep directory structure for all; else, flatten
+        if [ "$HAS_DIR" = true ]; then
+          zip -r -${{ inputs.compression-level }} "$DEST_LOCAL" "${FILE_LIST[@]}"
+        else
+          zip -j -r -${{ inputs.compression-level }} "$DEST_LOCAL" "${FILE_LIST[@]}"
+        fi
         echo "Artifact created locally: $DEST_LOCAL"
 
     - name: Upload to MinIO
@@ -116,4 +125,5 @@ runs:
           fi
         fi
         mc cp "$DEST_LOCAL" "$DEST"
+        rm -rf "$DEST_LOCAL"
         rm -rf "$DEST_LOCAL"

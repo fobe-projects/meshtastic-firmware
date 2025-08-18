@@ -78,16 +78,25 @@ runs:
           exit 1
         fi
 
+        # Check existence of each artifact before downloading
+        ARTIFACT_PATH_BASE="artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID"
+        for ART in "${ARTIFACTS[@]}"; do
+          if ! mc ls "$ARTIFACT_PATH_BASE/$ART" > /dev/null 2>&1; then
+            echo "::error::Artifact $ART does not exist in MinIO at $ARTIFACT_PATH_BASE"
+            exit 1
+          fi
+        done
+
         if [[ "${{ inputs.merge-multiple }}" == "true" || ${#ARTIFACTS[@]} -eq 1 ]]; then
           for ART in "${ARTIFACTS[@]}"; do
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/${ART}.zip"
+            mc cp "$ARTIFACT_PATH_BASE/$ART" "$DEST/${ART}.zip"
             unzip -o "$DEST/${ART}.zip" -d "$DEST"
             rm "$DEST/${ART}.zip"
           done
         else
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/${ART}.zip"
+            mc cp "$ARTIFACT_PATH_BASE/$ART" "$DEST/${ART}.zip"
             unzip -o "$DEST/${ART}.zip" -d "$DEST/$ART"
             rm "$DEST/${ART}.zip"
           done
