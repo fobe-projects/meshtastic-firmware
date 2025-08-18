@@ -64,7 +64,6 @@ runs:
       if: steps.collect.outputs.files_found == 'true'
       shell: bash
       run: |
-        set -euo pipefail
         shopt -s globstar nullglob dotglob
         FILE_LIST=()
         add_files() {

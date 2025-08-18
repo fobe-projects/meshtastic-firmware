@@ -211,96 +211,96 @@ jobs:
       pio_env: ${{ matrix.board }}
       platform: stm32
 
-  # gather-artifacts:
-  #   permissions:
-  #     contents: write
-  #     pull-requests: write
-  #   strategy:
-  #     fail-fast: false
-  #     matrix:
-  #       arch:
-  #         - esp32
-  #         - esp32s3
-  #         - esp32c3
-  #         - esp32c6
-  #         - nrf52840
-  #         - rp2040
-  #         - rp2350
-  #         - stm32
-  #   runs-on: self-hosted
-  #   needs:
-  #     [
-  #       version,
-  #       build-esp32,
-  #       build-esp32s3,
-  #       build-esp32c3,
-  #       build-esp32c6,
-  #       build-nrf52840,
-  #       build-rp2040,
-  #       build-rp2350,
-  #       build-stm32,
-  #     ]
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v5
-  #       with:
-  #         ref: ${{github.event.pull_request.head.ref}}
-  #         repository: ${{github.event.pull_request.head.repo.full_name}}
+  gather-artifacts:
+    permissions:
+      contents: write
+      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        arch:
+          - esp32
+          - esp32s3
+          - esp32c3
+          - esp32c6
+          - nrf52840
+          - rp2040
+          - rp2350
+          - stm32
+    runs-on: self-hosted
+    needs:
+      [
+        version,
+        build-esp32,
+        build-esp32s3,
+        build-esp32c3,
+        build-esp32c6,
+        build-nrf52840,
+        build-rp2040,
+        build-rp2350,
+        build-stm32,
+      ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
+          repository: ${{github.event.pull_request.head.repo.full_name}}
 
-  #     - uses: actions/download-artifact@v5
-  #       with:
-  #         path: ./
-  #         pattern: firmware-${{matrix.arch}}-*
-  #         merge-multiple: true
+      - uses: actions/download-artifact@v5
+        with:
+          path: ./
+          pattern: firmware-${{matrix.arch}}-*
+          merge-multiple: true
 
-  #     - name: Display structure of downloaded files
-  #       run: ls -R
+      - name: Display structure of downloaded files
+        run: ls -R
 
-  #     - name: Move files up
-  #       run: mv -b -t ./ ./bin/device-*.sh ./bin/device-*.bat
+      - name: Move files up
+        run: mv -b -t ./ ./bin/device-*.sh ./bin/device-*.bat
 
-  #     - name: Repackage in single firmware zip
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
-  #         overwrite: true
-  #         path: |
-  #           ./firmware-*.bin
-  #           ./firmware-*.uf2
-  #           ./firmware-*.hex
-  #           ./firmware-*-ota.zip
-  #           ./device-*.sh
-  #           ./device-*.bat
-  #           ./littlefs-*.bin
-  #           ./bleota*bin
-  #           ./Meshtastic_nRF52_factory_erase*.uf2
-  #         retention-days: 30
+      - name: Repackage in single firmware zip
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
+          overwrite: true
+          path: |
+            ./firmware-*.bin
+            ./firmware-*.uf2
+            ./firmware-*.hex
+            ./firmware-*-ota.zip
+            ./device-*.sh
+            ./device-*.bat
+            ./littlefs-*.bin
+            ./bleota*bin
+            ./Meshtastic_nRF52_factory_erase*.uf2
+          retention-days: 30
 
-  #     - uses: actions/download-artifact@v5
-  #       with:
-  #         name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
-  #         merge-multiple: true
-  #         path: ./output
+      - uses: actions/download-artifact@v5
+        with:
+          name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
+          merge-multiple: true
+          path: ./output
 
-  #     # For diagnostics
-  #     - name: Show artifacts
-  #       run: ls -lR
+      # For diagnostics
+      - name: Show artifacts
+        run: ls -lR
 
-  #     - name: Device scripts permissions
-  #       run: |
-  #         chmod +x ./output/device-install.sh
-  #         chmod +x ./output/device-update.sh
+      - name: Device scripts permissions
+        run: |
+          chmod +x ./output/device-install.sh
+          chmod +x ./output/device-update.sh
 
-  #     - name: Zip firmware
-  #       run: zip -j -9 -r ./firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip ./output
+      - name: Zip firmware
+        run: zip -j -9 -r ./firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip ./output
 
-  # - name: Repackage in single elfs zip
-  #   uses: actions/upload-artifact@v4
-  #   with:
-  #     name: debug-elfs-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip
-  #     overwrite: true
-  #     path: ./*.elf
-  #     retention-days: 30
+  - name: Repackage in single elfs zip
+    uses: actions/upload-artifact@v4
+    with:
+      name: debug-elfs-${{matrix.arch}}-${{ needs.version.outputs.long }}.zip
+      overwrite: true
+      path: ./*.elf
+      retention-days: 30
 
   # - uses: scruplelesswizard/comment-artifact@main
   #   if: ${{ github.event_name == 'pull_request' }}
