@@ -92,9 +92,9 @@ runs:
             mkdir -p "$DEST/$ART"
             echo "targetX: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
             echo "target-to: $DEST/$ART"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/$ART/$ART"
-            unzip -o "$DEST/$ART/$ART" -d "$DEST/$ART"
-            rm "$DEST/$ART/$ART"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/$ART"
+            unzip -o "$DEST/$ART" -d "$DEST/$ART"
+            rm "$DEST/$ART"
           done
         fi
 
