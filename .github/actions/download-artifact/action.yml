@@ -50,7 +50,7 @@ runs:
         BUCKET="$FOBE_S3_ARTIFACT_BUCKET"
         DEST="${{ steps.setpath.outputs.download_path }}"
 
-        # 处理DEST为本地路径（如 test-up -> ./test-up）
+        # Ensure DEST is a local path (e.g., test-up -> ./test-up)
         if [[ "$DEST" != /* && "$DEST" != ./* ]]; then
           DEST="./$DEST"
         fi
@@ -62,17 +62,16 @@ runs:
         else
           ARTIFACT_PATH="artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/"
           if [ -n "${{ inputs.pattern }}" ]; then
-            echo "使用 pattern: ${{ inputs.pattern }}"
-            echo "mc ls \"$ARTIFACT_PATH\" | awk '{print \$NF}' | grep -E \"${{ inputs.pattern }}\""
+            # Use pattern to filter artifacts
             ARTIFACTS=($(mc ls "$ARTIFACT_PATH" | awk '{print $NF}' | grep -E "${{ inputs.pattern }}"))
           else
-            echo "未指定 pattern，列出所有 artifact"
-            echo "mc ls \"$ARTIFACT_PATH\" | awk '{print \$NF}'"
+            # List all artifacts
             ARTIFACTS=($(mc ls "$ARTIFACT_PATH" | awk '{print $NF}'))
           fi
         fi
 
-        echo "匹配到的 ARTIFACTS: ${ARTIFACTS[@]}"
+        # Print matched artifacts for debugging
+        echo "Matched artifacts: ${ARTIFACTS[@]}"
 
         if [ ${#ARTIFACTS[@]} -eq 0 ]; then
           echo "::error::No artifacts found to download"
@@ -81,8 +80,6 @@ runs:
 
         if [[ "${{ inputs.merge-multiple }}" == "true" || ${#ARTIFACTS[@]} -eq 1 ]]; then
           for ART in "${ARTIFACTS[@]}"; do
-            echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
-            echo "target-to: $DEST"
             mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/${ART}.zip"
             unzip -o "$DEST/${ART}.zip" -d "$DEST"
             rm "$DEST/${ART}.zip"
@@ -90,8 +87,6 @@ runs:
         else
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
-            echo "targetX: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
-            echo "target-to: $DEST/$ART"
             mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/${ART}.zip"
             unzip -o "$DEST/${ART}.zip" -d "$DEST/$ART"
             rm "$DEST/${ART}.zip"
