@@ -51,15 +51,23 @@ runs:
         mkdir -p "$DEST"
 
         if [ -n "${{ inputs.name }}" ]; then
+          echo "指定 name: ${{ inputs.name }}"
           ARTIFACTS=("${{ inputs.name }}")
         else
           ARTIFACT_PATH="artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/"
+          echo "未指定 name，ARTIFACT_PATH: $ARTIFACT_PATH"
           if [ -n "${{ inputs.pattern }}" ]; then
+            echo "使用 pattern: ${{ inputs.pattern }}"
+            echo "mc ls \"$ARTIFACT_PATH\" | awk '{print \$NF}' | grep -E \"${{ inputs.pattern }}\""
             ARTIFACTS=($(mc ls "$ARTIFACT_PATH" | awk '{print $NF}' | grep -E "${{ inputs.pattern }}"))
           else
+            echo "未指定 pattern，列出所有 artifact"
+            echo "mc ls \"$ARTIFACT_PATH\" | awk '{print \$NF}'"
             ARTIFACTS=($(mc ls "$ARTIFACT_PATH" | awk '{print $NF}'))
           fi
         fi
+
+        echo "匹配到的 ARTIFACTS: ${ARTIFACTS[@]}"
 
         if [ ${#ARTIFACTS[@]} -eq 0 ]; then
           echo "::error::No artifacts found to download"
