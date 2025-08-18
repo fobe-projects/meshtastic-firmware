@@ -83,7 +83,7 @@ runs:
           for ART in "${ARTIFACTS[@]}"; do
             echo "target: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
             echo "target-to: $DEST"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/$ART"
             unzip -o "$DEST/$ART" -d "$DEST"
             rm "$DEST/$ART"
           done
@@ -91,9 +91,9 @@ runs:
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
             echo "targetX: artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART"
-            echo "target-to: $DEST"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST"
-            unzip -o "$DEST/$ART" -d "$DEST"
+            echo "target-to: $DEST/$ART"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/$ART/$ART"
+            unzip -o "$DEST/$ART/$ART" -d "$DEST/$ART"
             rm "$DEST/$ART/$ART"
           done
         fi
