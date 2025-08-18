@@ -76,14 +76,14 @@ runs:
 
         if [[ "${{ inputs.merge-multiple }}" == "true" || ${#ARTIFACTS[@]} -eq 1 ]]; then
           for ART in "${ARTIFACTS[@]}"; do
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART/artifact.zip" "$DEST/$ART.zip"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART/$ART.zip" "$DEST/$ART.zip"
             unzip -o "$DEST/$ART.zip" -d "$DEST"
             rm "$DEST/$ART.zip"
           done
         else
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART" "$DEST/$ART.zip"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART.zip"
             unzip -o "$DEST/$ART.zip" -d "$DEST/$ART"
             rm "$DEST/$ART.zip"
           done

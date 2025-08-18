@@ -60,6 +60,7 @@ runs:
           printf "%s\n" "${FILES[@]}" > filelist.txt
           echo "files_found=true" >> $GITHUB_OUTPUT
         fi
+    - uses: ./.github/actions/setup-minio
     - name: Create zip
       if: steps.collect.outputs.files_found == 'true'
       shell: bash
@@ -94,15 +95,17 @@ runs:
           echo "No files found for path(s): ${{ inputs.path }}"
           exit 0
         fi
-        zip -r -${{ inputs.compression-level }} artifact.zip "${FILE_LIST[@]}"
-        echo "Artifact created locally: artifact.zip"
-    - uses: ./.github/actions/setup-minio
+
+        DEST_LOCAL="$RUNNER_TEMP/artifact/${{ github.run_id }}/${{ inputs.name }}.zip"
+        zip -r -${{ inputs.compression-level }} "$DEST_LOCAL" "${FILE_LIST[@]}"
+        echo "Artifact created locally: $DEST_LOCAL"
+
     - name: Upload to MinIO
       shell: bash
       run: |
-        set -euo pipefail
         export MC_HOST_artifact="http://$FOBE_S3_ARTIFACT_ACCESS_KEY:$FOBE_S3_ARTIFACT_SECRET_KEY@$FOBE_S3_ARTIFACT_HOST:$FOBE_S3_ARTIFACT_PORT"
-        DEST="artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}"
+        DEST_LOCAL="$RUNNER_TEMP/artifact/${{ github.run_id }}/${{ inputs.name }}.zip"
+        DEST="artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}.zip"
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
             echo "Artifact already exists. Overwriting..."
@@ -112,4 +115,4 @@ runs:
             exit 1
           fi
         fi
-        mc cp artifact.zip "$DEST"
+        mc cp "$DEST_LOCAL" "$DEST"
