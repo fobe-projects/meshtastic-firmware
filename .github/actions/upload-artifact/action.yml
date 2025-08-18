@@ -96,8 +96,8 @@ runs:
           exit 0
         fi
 
-        mkdir -p "$RUNNER_TEMP/artifact/${{ github.run_id }}"
-        DEST_LOCAL="$RUNNER_TEMP/artifact/${{ github.run_id }}/${{ inputs.name }}.zip"
+        mkdir -p "$RUNNER_TEMP/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/artifact"
+        DEST_LOCAL="$RUNNER_TEMP/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/artifact/${{ inputs.name }}.zip"
         zip -r -${{ inputs.compression-level }} "$DEST_LOCAL" "${FILE_LIST[@]}"
         echo "Artifact created locally: $DEST_LOCAL"
 
@@ -105,7 +105,7 @@ runs:
       shell: bash
       run: |
         export MC_HOST_artifact="http://$FOBE_S3_ARTIFACT_ACCESS_KEY:$FOBE_S3_ARTIFACT_SECRET_KEY@$FOBE_S3_ARTIFACT_HOST:$FOBE_S3_ARTIFACT_PORT"
-        DEST_LOCAL="$RUNNER_TEMP/artifact/${{ github.run_id }}/${{ inputs.name }}.zip"
+        DEST_LOCAL="$RUNNER_TEMP/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/artifact/${{ inputs.name }}.zip"
         DEST="artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}.zip"
         if mc ls "$DEST" >/dev/null 2>&1; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
@@ -117,4 +117,4 @@ runs:
           fi
         fi
         mc cp "$DEST_LOCAL" "$DEST"
-        rm -rf "$RUNNER_TEMP/artifact/${{ github.run_id }}"
+        rm -rf "$DEST_LOCAL"
