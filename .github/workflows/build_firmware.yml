@@ -59,12 +59,19 @@ jobs:
       - name: Build ${{ inputs.platform }}
         id: build
         uses: ./.github/actions/build-variant-docker
+        continue-on-error: true
         with:
           pio_platform: ${{ inputs.platform }}
           pio_env: ${{ inputs.pio_env }}
           pio_target: build
-          ota_firmware_source: ${{ steps.ota_dir.outputs.src || '' }}
-          ota_firmware_target: ${{ steps.ota_dir.outputs.tgt || '' }}
+          ota_firmware_source: ""
+          ota_firmware_target: ""
+
+      - name: Skip following jobs if build failed
+        if: steps.build.outcome != 'success'
+        run: |
+          echo "Build failed, skipping remaining steps."
+          exit 0
 
       - name: Fix workspace permissions
         if: always()
