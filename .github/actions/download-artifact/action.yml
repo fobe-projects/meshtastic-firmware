@@ -83,9 +83,9 @@ runs:
         else
           for ART in "${ARTIFACTS[@]}"; do
             mkdir -p "$DEST/$ART"
-            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART.zip"
-            unzip -o "$DEST/$ART.zip" -d "$DEST/$ART"
-            rm "$DEST/$ART.zip"
+            mc cp "artifact/$BUCKET/artifact/$OWNER/$REPO/$RUN_ID/$ART.zip" "$DEST/$ART/$ART.zip"
+            unzip -o "$DEST/$ART/$ART.zip" -d "$DEST/$ART"
+            rm "$DEST/$ART/$ART.zip"
           done
         fi
 
