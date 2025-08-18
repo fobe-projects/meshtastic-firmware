@@ -107,11 +107,12 @@ runs:
         export MC_HOST_artifact="http://$FOBE_S3_ARTIFACT_ACCESS_KEY:$FOBE_S3_ARTIFACT_SECRET_KEY@$FOBE_S3_ARTIFACT_HOST:$FOBE_S3_ARTIFACT_PORT"
         DEST_LOCAL="$RUNNER_TEMP/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/artifact/${{ inputs.name }}.zip"
         DEST="artifact/$FOBE_S3_ARTIFACT_BUCKET/artifact/${{ github.repository_owner }}/${{ github.event.repository.name }}/${{ github.run_id }}/${{ inputs.name }}"
-        if mc ls "$DEST" >/dev/null 2>&1; then
+        # 判断目标文件是否已存在
+        if mc ls "${DEST}" | grep -q "${{ inputs.name }}.zip"; then
           if [[ "${{ inputs.overwrite }}" == "true" ]]; then
-            mc rm -r --force "$DEST"
+            mc rm -r --force "${DEST}"
           else
-            echo "::error::Artifact already exists at $DEST and overwrite=false"
+            echo "::error::Artifact already exists at ${DEST} and overwrite=false"
             exit 1
           fi
         fi
