@@ -31,14 +31,14 @@ jobs:
       fail-fast: false
       matrix:
         arch:
-          # - esp32
-          # - esp32s3
-          # - esp32c3
-          # - esp32c6
+          - esp32
+          - esp32s3
+          - esp32c3
+          - esp32c6
           - nrf52840
-          # - rp2040
-          # - rp2350
-          # - stm32
+          - rp2040
+          - rp2350
+          - stm32
           # - check
     runs-on: ubuntu-24.04
     steps:
