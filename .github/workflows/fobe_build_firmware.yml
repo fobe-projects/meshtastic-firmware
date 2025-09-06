@@ -23,7 +23,7 @@ jobs:
       - name: Fix Workspace Permissions
         run: |
           sudo chown -R $USER:$USER $GITHUB_WORKSPACE
-          sudo chmod -R u+rwX $GITHUB_WORKSPACE
+          sudo chmod -R a+rwX $GITHUB_WORKSPACE
       - uses: actions/checkout@v5
         with:
           submodules: recursive
@@ -60,7 +60,7 @@ jobs:
       - name: Fix Workspace Permissions
         run: |
           sudo chown -R $USER:$USER $GITHUB_WORKSPACE
-          sudo chmod -R u+rwX $GITHUB_WORKSPACE
+          sudo chmod -R a+rwX $GITHUB_WORKSPACE
 
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4
