@@ -18,7 +18,7 @@ permissions: read-all
 jobs:
   pio-build:
     name: build-${{ inputs.platform }}
-    runs-on: arc-runner-set
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@v5
         with:
