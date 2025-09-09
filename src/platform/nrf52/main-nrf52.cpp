@@ -329,6 +329,40 @@ void cpuDeepSleep(uint32_t msecToWake)
     detachInterrupt(PIN_BUTTON1);
 #endif
 
+#ifdef FOBE_QUILL_NRF52840_MESH
+    nrf_gpio_cfg_default(PIN_LED1);
+    nrf_gpio_cfg_default(EXT_CHRG_DETECT);
+    nrf_gpio_cfg_default(PIN_WIRE_SDA);
+    nrf_gpio_cfg_default(PIN_WIRE_SCL);
+    nrf_gpio_cfg_default(PIN_SERIAL1_RX);
+    nrf_gpio_cfg_default(PIN_SERIAL1_TX);
+    nrf_gpio_cfg_default(PIN_GPS_EN);
+    nrf_gpio_cfg_default(PIN_GPS_STANDBY);
+    nrf_gpio_cfg_default(ST7789_NSS);
+    nrf_gpio_cfg_default(ST7789_RS);
+    nrf_gpio_cfg_default(ST7789_SDA);
+    nrf_gpio_cfg_default(ST7789_SCK);
+    nrf_gpio_cfg_default(ST7789_RESET);
+    nrf_gpio_cfg_default(VTFT_CTRL);
+    nrf_gpio_cfg_default(VTFT_LEDA);
+#endif
+
+#ifdef FOBE_IDEA_MESH_TRACKER_C1
+    nrf_gpio_cfg_default(PIN_LED1);
+    nrf_gpio_cfg_default(EXT_CHRG_DETECT);
+    nrf_gpio_cfg_default(PIN_WIRE_SDA);
+    nrf_gpio_cfg_default(PIN_WIRE_SCL);
+    nrf_gpio_cfg_default(PIN_SERIAL1_RX);
+    nrf_gpio_cfg_default(PIN_SERIAL1_TX);
+    nrf_gpio_cfg_default(PIN_GPS_EN);
+    nrf_gpio_cfg_default(PIN_GPS_STANDBY);
+    nrf_gpio_cfg_default(PIN_BUZZER);
+    nrf_gpio_cfg_default(PIN_PERI_EN);
+    nrf_gpio_cfg_default(PIN_ROTARY_ENCODER_A);
+    nrf_gpio_cfg_default(PIN_ROTARY_ENCODER_B);
+    nrf_gpio_cfg_default(PIN_ROTARY_ENCODER_S);
+#endif
+
 #ifdef ELECROW_ThinkNode_M1
     for (int pin = 0; pin < 48; pin++) {
         if (pin == 17 || pin == 19 || pin == 20 || pin == 22 || pin == 23 || pin == 24 || pin == 25 || pin == 9 || pin == 10 ||
