@@ -31,6 +31,8 @@ extern "C" {
 #define PIN_RESET (0 + 18)
 #define PIN_I2C_SDA (0 + 7)
 #define PIN_I2C_SCL (0 + 27)
+#define PIN_I2C1_SDA (32 + 14)
+#define PIN_I2C1_SCL (32 + 10)
 #define PIN_PERI_EN (0 + 16)
 #define PIN_ROTARY_ENCODER_A (32 + 6)
 #define PIN_ROTARY_ENCODER_B (32 + 2)
@@ -69,10 +71,12 @@ extern "C" {
  * Wire Interfaces
  */
 #define HAS_WIRE 1
-#define WIRE_INTERFACES_COUNT 1
+#define WIRE_INTERFACES_COUNT 2
 #define I2C_NO_RESCAN
 #define PIN_WIRE_SDA PIN_I2C_SDA
 #define PIN_WIRE_SCL PIN_I2C_SCL
+#define PIN_WIRE1_SDA PIN_I2C1_SDA
+#define PIN_WIRE1_SCL PIN_I2C1_SCL
 #define HAS_SCREEN 1
 #define USE_SSD1306 1
 
