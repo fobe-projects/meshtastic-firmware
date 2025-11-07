@@ -1,0 +1,46 @@
+{
+  "build": {
+    "arduino": {
+      "ldscript": "esp32s3_out.ld",
+      "memory_type": "qio_qspi"
+    },
+    "core": "esp32",
+    "extra_flags": [
+      "-DBOARD_HAS_PSRAM",
+      "-DARDUINO_USB_CDC_ON_BOOT=1",
+      "-DARDUINO_USB_MODE=0",
+      "-DARDUINO_RUNNING_CORE=1",
+      "-DARDUINO_EVENT_RUNNING_CORE=0"
+    ],
+    "f_cpu": "240000000L",
+    "f_flash": "80000000L",
+    "flash_mode": "qio",
+    "psram_type": "qio",
+    "hwids": [
+      ["0x303a", "0x82f4"],
+      ["0x303a", "0x82f5"],
+      ["0x303a", "0x82f6"]
+    ],
+    "mcu": "esp32s3",
+    "variant": "fobe_quill_esp32s3_mesh"
+  },
+  "connectivity": ["wifi", "bluetooth", "lora"],
+  "debug": {
+    "default_tool": "esp-builtin",
+    "onboard_tools": ["esp-builtin"],
+    "openocd_target": "esp32s3.cfg"
+  },
+  "frameworks": ["arduino", "espidf"],
+  "name": "FoBE Quill ESP32S3 Mesh",
+  "upload": {
+    "flash_size": "4MB",
+    "maximum_ram_size": 327680,
+    "maximum_size": 4194304,
+    "use_1200bps_touch": true,
+    "wait_for_upload_port": true,
+    "require_upload_port": true,
+    "speed": 921600
+  },
+  "url": "https://docs.fobestudio.com/product/f1102/applications",
+  "vendor": "FoBE Studio"
+}
