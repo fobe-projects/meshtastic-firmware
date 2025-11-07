@@ -126,7 +126,7 @@ int32_t VoiceCommandModule::runOnce()
         print_results = 0;
     }
 
-    return 10; // Check next buffer immediately
+    return 50; // Check next buffer immediately
 }
 
 /**
