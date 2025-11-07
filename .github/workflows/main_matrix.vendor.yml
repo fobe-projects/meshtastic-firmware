@@ -34,7 +34,7 @@ jobs:
           # - esp32
           - esp32s3
           # - esp32c3
-          # - esp32c6
+          - esp32c6
           - nrf52840
           # - rp2040
           # - rp2350
@@ -133,16 +133,16 @@ jobs:
   #     pio_env: ${{ matrix.board }}
   #     platform: esp32c3
 
-  # build-esp32c6:
-  #   needs: [setup, version]
-  #   strategy:
-  #     fail-fast: false
-  #     matrix: ${{ fromJson(needs.setup.outputs.esp32c6) }}
-  #   uses: ./.github/workflows/build_firmware.vendor.yml
-  #   with:
-  #     version: ${{ needs.version.outputs.long }}
-  #     pio_env: ${{ matrix.board }}
-  #     platform: esp32c6
+  build-esp32c6:
+    needs: [setup, version]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.setup.outputs.esp32c6) }}
+    uses: ./.github/workflows/build_firmware.vendor.yml
+    with:
+      version: ${{ needs.version.outputs.long }}
+      pio_env: ${{ matrix.board }}
+      platform: esp32c6
 
   build-nrf52840:
     needs: [setup, version]
@@ -268,7 +268,7 @@ jobs:
           # - esp32
           - esp32s3
           # - esp32c3
-          # - esp32c6
+          - esp32c6
           - nrf52840
           # - rp2040
           # - rp2350
@@ -279,7 +279,7 @@ jobs:
         # build-esp32,
         build-esp32s3,
         # build-esp32c3,
-        # build-esp32c6,
+        build-esp32c6,
         build-nrf52840,
         # build-rp2040,
         # build-rp2350,
@@ -425,7 +425,7 @@ jobs:
           # - esp32
           - esp32s3
           # - esp32c3
-          # - esp32c6
+          - esp32c6
           - nrf52840
           # - rp2040
           # - rp2350
