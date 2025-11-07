@@ -50,6 +50,9 @@
 #endif
 #include "modules/RoutingModule.h"
 #include "modules/TextMessageModule.h"
+#if MESHTASTIC_INCLUDE_VOICE_COMMAND
+#include "modules/VoiceCommandModule.h"
+#endif
 #if !MESHTASTIC_EXCLUDE_TRACEROUTE
 #include "modules/TraceRouteModule.h"
 #endif
@@ -173,6 +176,9 @@ void setupModules()
 #endif
     // Example: Put your module here
     // new ReplyModule();
+#if MESHTASTIC_INCLUDE_VOICE_COMMAND
+    voiceCommandModule = new VoiceCommandModule();
+#endif
 #if (HAS_BUTTON || ARCH_PORTDUINO) && !MESHTASTIC_EXCLUDE_INPUTBROKER
     if (config.display.displaymode != meshtastic_Config_DisplayConfig_DisplayMode_COLOR) {
         rotaryEncoderInterruptImpl1 = new RotaryEncoderInterruptImpl1();

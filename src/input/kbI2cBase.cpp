@@ -7,6 +7,8 @@
 #include "TDeckProKeyboard.h"
 #elif defined(T_LORA_PAGER)
 #include "TLoraPagerKeyboard.h"
+#elif defined(FOBE_IDEA_MESH_TRACKER_C1)
+#include "MFPT9Keyboard.h"
 #else
 #include "TCA8418Keyboard.h"
 #endif
@@ -20,6 +22,8 @@ KbI2cBase::KbI2cBase(const char *name)
       TCAKeyboard(*(new TDeckProKeyboard()))
 #elif defined(T_LORA_PAGER)
       TCAKeyboard(*(new TLoraPagerKeyboard()))
+#elif defined(FOBE_IDEA_MESH_TRACKER_C1)
+      TCAKeyboard(*(new MFPT9Keyboard()))
 #else
       TCAKeyboard(*(new TCA8418Keyboard()))
 #endif
