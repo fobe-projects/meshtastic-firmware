@@ -201,7 +201,7 @@ bool VoiceCommandModule::microphoneInferenceStart(uint32_t n_samples)
     }
 
     // Set gain (0-255, default 20, max 127)
-    PDM.setGain(127);
+    PDM.setGain(64);
 
     record_ready = true;
     return true;
