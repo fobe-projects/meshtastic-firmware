@@ -28,13 +28,13 @@ class VoiceCommandModule : private concurrency::OSThread
     const int DETECTION_WINDOW_SLICES = 2; // 2 slices = 500ms, 4 slices = 1 second
 
     // Audio energy threshold for voice activity detection (RMS normalized)
-    const float ENERGY_THRESHOLD = 0.001f; // Lower threshold to avoid missing commands
+    const float ENERGY_THRESHOLD = 0.002f; // Lower threshold to avoid missing commands
 
     // Confidence threshold for command recognition (compensated for shorter window)
-    const float CONFIDENCE_THRESHOLD = 0.82f; // 80% threshold compensates for reduced data
+    const float CONFIDENCE_THRESHOLD = 0.88f; // 80% threshold compensates for reduced data
 
     // Cooldown period to prevent duplicate triggers from sliding window overlap
-    const uint32_t COMMAND_COOLDOWN = 600; // 600ms (2 slices × 250ms × 2x margin)
+    const uint32_t COMMAND_COOLDOWN = 850; // 600ms (2 slices × 250ms × 2x margin)
 
     // === Runtime State ===
     bool firstTime = true;
