@@ -1,0 +1,35 @@
+#define I2C_SDA 16
+#define I2C_SCL 17
+
+#define LED_PIN 5
+#define LED_STATE_ON 0
+#define BUTTON_PIN 9
+
+// #define BATTERY_PIN 6
+// #define ADC_CHANNEL ADC1_GPIO6_CHANNEL
+// #define ADC_MULTIPLIER 1.667
+// #define ADC_ATTENUATION ADC_ATTEN_DB_12
+
+#undef LORA_SCK
+#undef LORA_MISO
+#undef LORA_MOSI
+#undef LORA_CS
+
+#define USE_SX1262
+
+#define LORA_MISO 22
+#define LORA_SCK 20
+#define LORA_MOSI 21
+#define LORA_CS 23
+#define LORA_RESET 18
+#define LORA_DIO1 3
+#define LORA_BUSY 2
+#define SX126X_CS LORA_CS
+#define SX126X_DIO1 LORA_DIO1
+#define SX126X_BUSY LORA_BUSY
+#define SX126X_RESET LORA_RESET
+#define SX126X_RXEN 19
+#define SX126X_TXEN RADIOLIB_NC
+#define SX126X_DIO2_AS_RF_SWITCH
+#define SX126X_DIO3_TCXO_VOLTAGE 1.8
+#define SX126X_MAX_POWER 22
