@@ -150,7 +150,8 @@ static const uint8_t SCK = PIN_SPI_SCK;
 #define SX126X_BUSY (32 + 4)
 #define SX126X_RESET (32 + 6)
 #define SX126X_TXEN RADIOLIB_NC
-#define SX126X_RXEN (0 + 25)
+#define SX126X_RXEN RADIOLIB_NC
+#define SX126X_ANT_SW (0 + 25)
 #define SX126X_DIO2_AS_RF_SWITCH
 #define SX126X_DIO3_TCXO_VOLTAGE 1.8
 
