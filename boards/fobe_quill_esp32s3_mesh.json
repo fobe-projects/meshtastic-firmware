@@ -41,6 +41,6 @@
     "require_upload_port": true,
     "speed": 921600
   },
-  "url": "https://docs.fobestudio.com/product/f1102/applications",
+  "url": "https://docs.fobestudio.com/quill_esp32s3_mesh_getting_started",
   "vendor": "FoBE Studio"
 }
