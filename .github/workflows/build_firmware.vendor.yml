@@ -1,4 +1,4 @@
-name: Build
+name: Vendor Build
 
 on:
   workflow_call:
@@ -20,7 +20,7 @@ jobs:
     name: build-${{ inputs.platform }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: recursive
           ref: ${{github.event.pull_request.head.ref}}

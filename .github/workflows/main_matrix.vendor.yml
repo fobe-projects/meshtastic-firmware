@@ -34,7 +34,7 @@ jobs:
           # - esp32
           - esp32s3
           # - esp32c3
-          - esp32c6
+          # - esp32c6
           - nrf52840
           # - rp2040
           # - rp2350
@@ -42,7 +42,7 @@ jobs:
           - check
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: 3.x
@@ -72,7 +72,7 @@ jobs:
   version:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Get release version string
         run: |
           echo "long=$(./bin/buildinfo.py long)" >> $GITHUB_OUTPUT
@@ -93,7 +93,7 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'workflow_dispatch' }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Build base
         id: base
         uses: ./.github/actions/setup-base
@@ -133,16 +133,16 @@ jobs:
   #     pio_env: ${{ matrix.board }}
   #     platform: esp32c3
 
-  build-esp32c6:
-    needs: [setup, version]
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJson(needs.setup.outputs.esp32c6) }}
-    uses: ./.github/workflows/build_firmware.vendor.yml
-    with:
-      version: ${{ needs.version.outputs.long }}
-      pio_env: ${{ matrix.board }}
-      platform: esp32c6
+  # build-esp32c6:
+  #   needs: [setup, version]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix: ${{ fromJson(needs.setup.outputs.esp32c6) }}
+  #   uses: ./.github/workflows/build_firmware.vendor.yml
+  #   with:
+  #     version: ${{ needs.version.outputs.long }}
+  #     pio_env: ${{ matrix.board }}
+  #     platform: esp32c6
 
   build-nrf52840:
     needs: [setup, version]
@@ -268,7 +268,7 @@ jobs:
           # - esp32
           - esp32s3
           # - esp32c3
-          - esp32c6
+          # - esp32c6
           - nrf52840
           # - rp2040
           # - rp2350
@@ -279,7 +279,7 @@ jobs:
         # build-esp32,
         build-esp32s3,
         # build-esp32c3,
-        build-esp32c6,
+        # build-esp32c6,
         build-nrf52840,
         # build-rp2040,
         # build-rp2350,
@@ -287,7 +287,7 @@ jobs:
       ]
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
@@ -366,7 +366,7 @@ jobs:
       # - package-pio-deps-native-tft
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -425,7 +425,7 @@ jobs:
           # - esp32
           - esp32s3
           # - esp32c3
-          - esp32c6
+          # - esp32c6
           - nrf52840
           # - rp2040
           # - rp2350
@@ -435,7 +435,7 @@ jobs:
     needs: [release-artifacts, version]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v6
@@ -490,7 +490,7 @@ jobs:
         esp32,esp32s3,esp32c3,esp32c6,nrf52840,rp2040,rp2350,stm32
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Setup Python
         uses: actions/setup-python@v6
