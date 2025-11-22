@@ -160,6 +160,8 @@ static const uint8_t SCK = PIN_SPI_SCK;
  */
 #define PIN_GPS_RX PIN_SERIAL1_TX
 #define PIN_GPS_TX PIN_SERIAL1_RX
+#define GPS_RX_PIN PIN_GPS_RX
+#define GPS_TX_PIN PIN_GPS_TX
 #define HAS_GPS 1
 #define GPS_BAUDRATE 9600
 #define GPS_THREAD_INTERVAL 50

@@ -105,6 +105,7 @@ static const uint8_t SCK = PIN_SPI_SCK;
  */
 #define USE_SX1262
 #define SX126X_CS (32 + 8)
+#define LORA_CS SX126X_CS
 #define SX126X_DIO1 (0 + 17)
 #define SX126X_BUSY (0 + 15)
 #define SX126X_RESET (0 + 13)
@@ -120,11 +121,13 @@ static const uint8_t SCK = PIN_SPI_SCK;
 #define GPS_L76K
 #define PIN_GPS_RX PIN_SERIAL1_TX
 #define PIN_GPS_TX PIN_SERIAL1_RX
+#define GPS_RX_PIN PIN_GPS_RX
+#define GPS_TX_PIN PIN_GPS_TX
 #define HAS_GPS 1
 #define GPS_POWER_TOGGLE
 #define GPS_BAUDRATE 9600
 #define GPS_THREAD_INTERVAL 50
-#define PIN_GPS_RESET (0 + 13)
+#define PIN_GPS_RESET (0 + 4)
 #define GPS_RESET_MODE LOW
 #define PIN_GPS_STANDBY (0 + 6)
 #define PIN_GPS_EN (0 + 26)
