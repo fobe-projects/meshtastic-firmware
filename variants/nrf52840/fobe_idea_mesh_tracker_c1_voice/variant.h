@@ -105,6 +105,7 @@ static const uint8_t SCK = PIN_SPI_SCK;
  */
 #define USE_SX1262
 #define SX126X_CS (32 + 8)
+#define LORA_CS SX126X_CS
 #define SX126X_DIO1 (0 + 17)
 #define SX126X_BUSY (0 + 15)
 #define SX126X_RESET (0 + 13)
