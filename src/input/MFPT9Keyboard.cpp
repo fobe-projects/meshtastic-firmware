@@ -73,7 +73,6 @@ void MFPT9Keyboard::toggleInputMode()
 #ifdef HAS_SCREEN
         if (screen) {
             screen->showSimpleBanner("T9 Predictive", 1500);
-            screen->setFunctionSymbol("T9");
         }
 #endif
     } else {
@@ -89,7 +88,6 @@ void MFPT9Keyboard::toggleInputMode()
 #ifdef HAS_SCREEN
         if (screen) {
             screen->showSimpleBanner("Multi-tap", 1500);
-            screen->removeFunctionSymbol("T9");
         }
 #endif
     }
@@ -374,7 +372,8 @@ void MFPT9Keyboard::released()
                     t9Engine.backspace();
 
                     // Check if sequence is empty
-                    if (t9Engine.getKeySequence()[0] == '\0') {
+                    const char *seq = t9Engine.getKeySequence();
+                    if (!seq || seq[0] == '\0') {
                         t9_word_pending = false;
                     } else {
                         // Show new prediction or number sequence
@@ -387,7 +386,6 @@ void MFPT9Keyboard::released()
                             }
                         } else {
                             // Show number sequence
-                            const char *seq = t9Engine.getKeySequence();
                             if (seq) {
                                 for (uint8_t i = 0; seq[i] != '\0'; i++) {
                                     queueEvent(seq[i]);
