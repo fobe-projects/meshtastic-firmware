@@ -73,7 +73,6 @@ void MFPT9Keyboard::toggleInputMode()
 #ifdef HAS_SCREEN
         if (screen) {
             screen->showSimpleBanner("T9 Predictive", 1500);
-            screen->setFunctionSymbol("T9");
         }
 #endif
     } else {
@@ -89,7 +88,6 @@ void MFPT9Keyboard::toggleInputMode()
 #ifdef HAS_SCREEN
         if (screen) {
             screen->showSimpleBanner("Multi-tap", 1500);
-            screen->removeFunctionSymbol("T9");
         }
 #endif
     }
