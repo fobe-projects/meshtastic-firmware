@@ -119,8 +119,8 @@ static const uint8_t SCK = PIN_SPI_SCK;
  * GNSS
  */
 #define GPS_L76K
-#define PIN_GPS_RX PIN_SERIAL1_TX
-#define PIN_GPS_TX PIN_SERIAL1_RX
+#define PIN_GPS_RX PIN_SERIAL1_RX
+#define PIN_GPS_TX PIN_SERIAL1_TX
 #define GPS_RX_PIN PIN_GPS_RX
 #define GPS_TX_PIN PIN_GPS_TX
 #define HAS_GPS 1
