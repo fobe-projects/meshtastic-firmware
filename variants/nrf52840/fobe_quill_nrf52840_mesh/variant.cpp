@@ -1,4 +1,5 @@
 #include "variant.h"
+#include "Arduino.h"
 #include "nrf.h"
 #include "wiring_constants.h"
 #include "wiring_digital.h"
@@ -24,4 +25,23 @@ void initVariant()
 
     // Charging Detection
     pinMode(EXT_CHRG_DETECT, INPUT);
+}
+
+void variant_shutdown()
+{
+    nrf_gpio_cfg_default(PIN_LED1);
+    nrf_gpio_cfg_default(EXT_CHRG_DETECT);
+    nrf_gpio_cfg_default(PIN_WIRE_SDA);
+    nrf_gpio_cfg_default(PIN_WIRE_SCL);
+    nrf_gpio_cfg_default(PIN_SERIAL1_RX);
+    nrf_gpio_cfg_default(PIN_SERIAL1_TX);
+    nrf_gpio_cfg_default(PIN_GPS_EN);
+    nrf_gpio_cfg_default(PIN_GPS_STANDBY);
+    nrf_gpio_cfg_default(ST7789_NSS);
+    nrf_gpio_cfg_default(ST7789_RS);
+    nrf_gpio_cfg_default(ST7789_SDA);
+    nrf_gpio_cfg_default(ST7789_SCK);
+    nrf_gpio_cfg_default(ST7789_RESET);
+    nrf_gpio_cfg_default(VTFT_CTRL);
+    nrf_gpio_cfg_default(VTFT_LEDA);
 }

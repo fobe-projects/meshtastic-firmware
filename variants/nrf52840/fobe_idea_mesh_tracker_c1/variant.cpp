@@ -1,4 +1,5 @@
 #include "variant.h"
+#include "Arduino.h"
 #include "nrf.h"
 #include "wiring_constants.h"
 #include "wiring_digital.h"
@@ -28,4 +29,21 @@ void initVariant()
     // Peripheral Power
     pinMode(PIN_PERI_EN, OUTPUT);
     digitalWrite(PIN_PERI_EN, HIGH);
+}
+
+void variant_shutdown()
+{
+    nrf_gpio_cfg_default(PIN_LED1);
+    nrf_gpio_cfg_default(EXT_CHRG_DETECT);
+    nrf_gpio_cfg_default(PIN_WIRE_SDA);
+    nrf_gpio_cfg_default(PIN_WIRE_SCL);
+    nrf_gpio_cfg_default(PIN_SERIAL1_RX);
+    nrf_gpio_cfg_default(PIN_SERIAL1_TX);
+    nrf_gpio_cfg_default(PIN_GPS_EN);
+    nrf_gpio_cfg_default(PIN_GPS_STANDBY);
+    nrf_gpio_cfg_default(PIN_BUZZER);
+    nrf_gpio_cfg_default(PIN_PERI_EN);
+    nrf_gpio_cfg_default(PIN_ROTARY_ENCODER_A);
+    nrf_gpio_cfg_default(PIN_ROTARY_ENCODER_B);
+    nrf_gpio_cfg_default(PIN_ROTARY_ENCODER_S);
 }
