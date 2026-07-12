@@ -14,10 +14,8 @@ jobs:
     name: Native Simulator Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
           submodules: recursive
 
       - name: Setup native build
@@ -70,10 +68,8 @@ jobs:
     name: Native PlatformIO Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
           submodules: recursive
 
       - name: Setup native build
@@ -127,10 +123,7 @@ jobs:
       - platformio-tests
     if: always()
     steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{github.event.pull_request.head.ref}}
-          repository: ${{github.event.pull_request.head.repo.full_name}}
+      - uses: actions/checkout@v7
 
       - name: Get release version string
         run: echo "long=$(./bin/buildinfo.py long)" >> $GITHUB_OUTPUT
@@ -143,7 +136,7 @@ jobs:
           merge-multiple: true
 
       - name: Test Report
-        uses: dorny/test-reporter@v2.6.0
+        uses: dorny/test-reporter@v3.0.0
         with:
           name: PlatformIO Tests
           path: testreport.xml
