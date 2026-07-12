@@ -211,7 +211,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #if defined(SEEED_WIO_TRACKER_L1) && !defined(SEEED_WIO_TRACKER_L1_EINK)
 #define SSD1306_ADDRESS SSD1306_ADDRESS_H
 #define USE_SH1106
-#elif defined(FOBE_IDEA_MESH_TRACKER_C1)
+#elif defined(FOBE_MESHKIT_C1)
 #define SSD1306_ADDRESS SSD1306_ADDRESS_H
 #else
 #define SSD1306_ADDRESS SSD1306_ADDRESS_L

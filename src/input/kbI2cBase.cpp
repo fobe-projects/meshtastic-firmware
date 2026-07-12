@@ -9,7 +9,7 @@
 #include "TLoraPagerKeyboard.h"
 #elif defined(M5STACK_CARDPUTER_ADV)
 #include "CardputerKeyboard.h"
-#elif defined(FOBE_IDEA_MESH_TRACKER_C1)
+#elif defined(FOBE_MESHKIT_C1)
 #include "MFPT9Keyboard.h"
 #elif defined(HACKADAY_COMMUNICATOR)
 #include "HackadayCommunicatorKeyboard.h"
@@ -28,7 +28,7 @@ KbI2cBase::KbI2cBase(const char *name)
       TCAKeyboard(*(new TLoraPagerKeyboard()))
 #elif defined(M5STACK_CARDPUTER_ADV)
       TCAKeyboard(*(new CardputerKeyboard()))
-#elif defined(FOBE_IDEA_MESH_TRACKER_C1)
+#elif defined(FOBE_MESHKIT_C1)
       TCAKeyboard(*(new MFPT9Keyboard()))
 #elif defined(HACKADAY_COMMUNICATOR)
       TCAKeyboard(*(new HackadayCommunicatorKeyboard()))

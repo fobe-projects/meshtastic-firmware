@@ -884,7 +884,7 @@ void NodeDB::installDefaultModuleConfig()
     moduleConfig.external_notification.output_ms = 100;
     moduleConfig.external_notification.active = true;
 #endif
-#ifdef FOBE_IDEA_MESH_TRACKER_C1
+#ifdef FOBE_MESHKIT_C1
     moduleConfig.canned_message.enabled = true;
     moduleConfig.canned_message.rotary1_enabled = true;
     moduleConfig.canned_message.inputbroker_pin_a = PIN_ROTARY_ENCODER_A;
