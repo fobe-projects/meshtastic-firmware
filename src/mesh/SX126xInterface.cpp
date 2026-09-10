@@ -284,8 +284,10 @@ template <typename T> bool SX126xInterface<T>::reconfigure()
         err = programModemParams();
 
     if (err != RADIOLIB_ERR_NONE) {
-        // Chip likely lost its state (reset/brownout); recover in place rather than crash - see
-        // RadioLibInterface::recoverChipStateLoss().
+        // A chip that fails standby or rejects parameter programming (typically WRONG_MODEM, -20) has
+        // lost its runtime configuration - packet type included - to a chip-internal reset or brownout.
+        // Recover in place: begin() hardware-resets the chip and restores the LoRa packet type. Crashing
+        // here instead would reboot before MeshService persists the config change that triggered us.
         RECORD_CRITICALERROR(meshtastic_CriticalErrorCode_INVALID_RADIO_SETTING);
         LOG_ERROR("SX126x rejected modem params, chip state lost? Full re-init");
         if (!reinitChip() || (err = programModemParams()) != RADIOLIB_ERR_NONE) {
@@ -422,43 +424,26 @@ template <typename T> void SX126xInterface<T>::startReceive()
 #else
 
     setTransmitEnable(false);
+    setStandby();
 
 #ifdef ARCH_PORTDUINO_WASM
+    // Continuous RX in the browser: duty-cycle sleep parks BUSY high between RX
+    // windows and stalls the slow WebUSB SPI link. No battery to save here.
+    int err = lora.startReceive(RADIOLIB_SX126X_RX_TIMEOUT_INF, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
     const char *rxMethod = "startReceive";
 #else
+    // We use a 16 bit preamble so this should save some power by letting radio sit in standby mostly.
+    int err = lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
     const char *rxMethod = "startReceiveDutyCycleAuto";
 #endif
-    auto tryStartRx = [&]() -> int16_t {
-#ifdef ARCH_PORTDUINO_WASM
-        // Continuous RX in the browser: duty-cycle sleep parks BUSY high between RX
-        // windows and stalls the slow WebUSB SPI link. No battery to save here.
-        return lora.startReceive(RADIOLIB_SX126X_RX_TIMEOUT_INF, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
-#else
-        // We use a 16 bit preamble so this should save some power by letting radio sit in standby mostly.
-        return lora.startReceiveDutyCycleAuto(preambleLength, 8, MESHTASTIC_RADIOLIB_IRQ_RX_FLAGS);
-#endif
-    };
-
-    int16_t err = trySetStandby();
-    if (err == RADIOLIB_ERR_NONE)
-        err = tryStartRx();
-
-    if (err != RADIOLIB_ERR_NONE) {
+    if (err != RADIOLIB_ERR_NONE)
         LOG_ERROR("SX126X %s %s%d", rxMethod, radioLibErr, err);
-        if (maybeRecoverChipStateLoss())
-            err = tryStartRx();
-    }
-
-    if (err != RADIOLIB_ERR_NONE) {
 #ifdef ARCH_PORTDUINO
+    if (err != RADIOLIB_ERR_NONE)
         portduino_status.LoRa_in_error = true;
 #else
-        // No assert: leave RX off rather than reboot; periodicRadioMaintenance() re-arms it, throttled
-        LOG_ERROR("SX126X RX offline %s%d", radioLibErr, err);
-        rxOffline = true;
-        return;
+    assert(err == RADIOLIB_ERR_NONE);
 #endif
-    }
 
     RadioLibInterface::startReceive();
 
@@ -479,23 +464,22 @@ template <typename T> bool SX126xInterface<T>::isChannelActive()
                                        .timeout = 0,
                                        .irqFlags = RADIOLIB_IRQ_CAD_DEFAULT_FLAGS,
                                        .irqMask = RADIOLIB_IRQ_CAD_DEFAULT_MASK}};
+    int16_t result;
     setTransmitEnable(false);
-    int16_t result = trySetStandby();
-    if (result == RADIOLIB_ERR_NONE) {
-        result = lora.scanChannel(cfg);
-        if (result == RADIOLIB_LORA_DETECTED)
-            return true;
-        if (result != RADIOLIB_CHANNEL_FREE)
-            LOG_ERROR("SX126X scanChannel %s%d", radioLibErr, result);
-        if (result != RADIOLIB_ERR_WRONG_MODEM)
-            return false;
-    }
+    setStandby();
+    result = lora.scanChannel(cfg);
+    if (result == RADIOLIB_LORA_DETECTED)
+        return true;
+    if (result != RADIOLIB_CHANNEL_FREE)
+        LOG_ERROR("SX126X scanChannel %s%d", radioLibErr, result);
 #ifdef ARCH_PORTDUINO
-    portduino_status.LoRa_in_error = true;
+    if (result == RADIOLIB_ERR_WRONG_MODEM)
+        portduino_status.LoRa_in_error = true;
+#else
+    assert(result != RADIOLIB_ERR_WRONG_MODEM);
 #endif
-    // standby failed or the LoRa modem type is gone - the chip lost its runtime state
-    maybeRecoverChipStateLoss();
-    return false; // report the channel free: a recovered chip can TX, a dead one fails startSend safely
+
+    return false;
 }
 
 /** Could we send right now (i.e. either not actively receiving or transmitting)? */
@@ -511,7 +495,7 @@ template <typename T> bool SX126xInterface<T>::sleep()
     // Not keeping config is busted - next time nrf52 board boots lora sending fails  tcxo related? - see datasheet
     // \todo Display actual typename of the adapter, not just `SX126x`
     LOG_DEBUG("SX126x entering sleep mode"); // (FIXME, don't keep config)
-    (void)trySetStandby(); // Stop any pending operations - the chip is being put to sleep, a failure must not crash
+    setStandby();                            // Stop any pending operations
 
     // turn off TCXO if it was powered
     // FIXME - this isn't correct
@@ -569,10 +553,6 @@ template <typename T> void SX126xInterface<T>::resetAGC()
     // 5. Re-calibrate image rejection for actual operating frequency
     //    Calibrate(0x7F) defaults to 902-928 MHz which is wrong for other regions.
     lora.calibrateImage(getFreq());
-    // 6. CalibrateImage keeps working internally after it returns, and BUSY does not
-    //    stay asserted for it; a register write in that window fails write-verify
-    //    (RADIOLIB_ERR_SPI_WRITE_FAILED) and stalls the chip.
-    module.hal->delay(50);
 
     // Re-apply settings that calibration may have reset
 
@@ -596,7 +576,7 @@ template <typename T> void SX126xInterface<T>::resetAGC()
         LOG_WARN("SX126x resetAGC: 0x8B5 RX patch re-apply failed");
     }
 
-    // 7. Resume receiving
+    // 6. Resume receiving
     startReceive();
 }
 

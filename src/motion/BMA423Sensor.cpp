@@ -6,43 +6,53 @@ BMA423Sensor::BMA423Sensor(ScanI2C::FoundDevice foundDevice) : MotionSensor::Mot
 
 bool BMA423Sensor::init()
 {
-    if (!sensor.begin(Wire, deviceAddress())) {
-        LOG_DEBUG("BMA423 init failed");
-        return false;
-    }
+    if (sensor.begin(Wire, deviceAddress())) {
+        sensor.configAccelerometer(sensor.RANGE_2G, sensor.ODR_100HZ, sensor.BW_NORMAL_AVG4, sensor.PERF_CONTINUOUS_MODE);
+        sensor.enableAccelerometer();
+        sensor.configInterrupt();
 
-    if (!sensor.configAccelerometer(OperationMode::NORMAL, AccelFullScaleRange::FS_2G, 100.0f, AccelBandwidth::NORMAL_AVG4,
-                                    AccelPerfMode::CONTINUOUS_MODE)) {
-        LOG_DEBUG("BMA423 accelerometer config failed");
-        return false;
-    }
-
-#ifdef T_WATCH_S3
-    // Need to raise the wrist function, need to set the correct axis
-    sensor.setRemapAxes(SensorRemap::TOP_LAYER_RIGHT_CORNER);
-#else
-    sensor.setRemapAxes(SensorRemap::BOTTOM_LAYER_BOTTOM_LEFT_CORNER);
+#ifdef BMA423_INT
+        pinMode(BMA4XX_INT, INPUT);
+        attachInterrupt(
+            BMA4XX_INT,
+            [] {
+                // Set interrupt to set irq value to true
+                BMA_IRQ = true;
+            },
+            RISING); // Select the interrupt mode according to the actual circuit
 #endif
 
-    // The tap detector defaults to double tap; tilt and double tap both wake the screen.
-    sensor.setOnTiltDetectedCallback([this] { wakeRequested = true; });
-    sensor.setOnTapCallback([this](TapType) { wakeRequested = true; });
-    if (!sensor.enableTiltDetector(true, true) || !sensor.enableTapDetector(true, true)) {
-        LOG_DEBUG("BMA423 wake detector setup failed");
-        return false;
-    }
+#ifdef T_WATCH_S3
+        // Need to raise the wrist function, need to set the correct axis
+        sensor.setRemapAxes(sensor.REMAP_TOP_LAYER_RIGHT_CORNER);
+#else
+        sensor.setRemapAxes(sensor.REMAP_BOTTOM_LAYER_BOTTOM_LEFT_CORNER);
+#endif
+        // sensor.enableFeature(sensor.FEATURE_STEP_CNTR, true);
+        sensor.enableFeature(sensor.FEATURE_TILT, true);
+        sensor.enableFeature(sensor.FEATURE_WAKEUP, true);
+        // sensor.resetPedometer();
 
-    LOG_DEBUG("BMA423 init ok");
-    return true;
+        // Turn on feature interrupt
+        sensor.enablePedometerIRQ();
+        sensor.enableTiltIRQ();
+
+        // It corresponds to isDoubleClick interrupt
+        sensor.enableWakeupIRQ();
+        LOG_DEBUG("BMA423 init ok");
+        return true;
+    }
+    LOG_DEBUG("BMA423 init failed");
+    return false;
 }
 
 int32_t BMA423Sensor::runOnce()
 {
-    wakeRequested = false;
-    sensor.update();
-    if (wakeRequested) {
-        wakeScreen();
-        return 500;
+    if (sensor.readIrqStatus()) {
+        if (sensor.isTilt() || sensor.isDoubleTap()) {
+            wakeScreen();
+            return 500;
+        }
     }
     return MOTION_SENSOR_CHECK_INTERVAL_MS;
 }

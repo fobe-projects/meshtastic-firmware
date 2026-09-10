@@ -32,14 +32,7 @@ uint32_t gpsHardsleepThresholdMs(uint32_t predictedSearchSecs)
 void GPSUpdateScheduling::informSearching()
 {
     searching = true;
-    validFixReceived = false;
     searchStartedMs = Time::getMillis();
-}
-
-void GPSUpdateScheduling::informValidFix()
-{
-    if (searching)
-        validFixReceived = true;
 }
 
 // Mark the time when searching for GPS is complete,
@@ -71,7 +64,6 @@ void GPSUpdateScheduling::informSearchFailed()
 void GPSUpdateScheduling::reset()
 {
     searching = false;
-    validFixReceived = false;
     searchStartedMs = 0;
     searchEndedMs = 0;
     searchCount = 0;
@@ -158,11 +150,6 @@ bool GPSUpdateScheduling::searchedTooLong()
 
     // Otherwise, not too long yet!
     return false;
-}
-
-bool GPSUpdateScheduling::hasValidFixSinceSearchStarted() const
-{
-    return searching && validFixReceived;
 }
 
 // Updates the predicted time-to-get-lock, by exponentially smoothing the latest observation

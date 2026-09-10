@@ -1,5 +1,4 @@
 #include "TextMessageModule.h"
-#include "Channels.h"
 #include "MeshService.h"
 #include "MessageStore.h"
 #include "NodeDB.h"
@@ -35,10 +34,8 @@ ProcessMessage TextMessageModule::handleReceived(const meshtastic_MeshPacket &mp
             auto *display = screen ? screen->getDisplayDevice() : nullptr;
             graphics::MessageRenderer::handleNewMessage(display, *sm, mp);
         })
-    // Only trigger screen wake if configuration allows it and the channel/sender isn't muted.
-    // An alert breaks through the mute: in COLOR display mode handleNewMessage() above never runs,
-    // so this trigger is the only wake an alert would get.
-    if (shouldWakeOnReceivedMessage() && (!isMutedForPacket(mp) || MeshService::isAlertPayload(mp))) {
+    // Only trigger screen wake if configuration allows it
+    if (shouldWakeOnReceivedMessage()) {
         powerFSM.trigger(EVENT_RECEIVED_MSG);
     }
 
