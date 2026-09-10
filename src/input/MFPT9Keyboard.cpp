@@ -10,9 +10,6 @@
 
 using Key = TCA8418KeyboardBase::TCA8418Key;
 
-// External screen object
-extern graphics::Screen *screen;
-
 // Num chars per key, modulus for rotating through characters (layout: 1 2 3 # / 4 5 6 0 / 7 8 9 *)
 static uint8_t TCA8418TapMod[_TCA8418_NUM_KEYS] = {13, 7, 7, 2, 7, 7, 7, 2, 9, 7, 9, 2};
 
