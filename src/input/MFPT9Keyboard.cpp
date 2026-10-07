@@ -95,7 +95,7 @@ void MFPT9Keyboard::pressed(uint8_t key)
     if (state == Init || state == Busy) {
         return;
     }
-    uint8_t next_key = 0;
+    uint8_t keyIndex = 0;
     const int keyValue = static_cast<int>(key);
 
     // Decode assuming decimal row/column format (legacy behaviour).
@@ -123,9 +123,9 @@ void MFPT9Keyboard::pressed(uint8_t key)
     }
 
     // Compute key index based on resolved row/column mapping
-    next_key = static_cast<uint8_t>(row * _TCA8418_COLS + col);
+    keyIndex = static_cast<uint8_t>(row * _TCA8418_COLS + col);
 
-    LOG_DEBUG("TCA8418: Key 0x%02X (%s decode) -> index %u", key, decoded ? "legacy" : "bitfield", next_key);
+    LOG_DEBUG("TCA8418: Key 0x%02X (%s decode) -> index %u", key, decoded ? "legacy" : "bitfield", keyIndex);
 
     state = Held;
     uint32_t now = millis();
@@ -139,13 +139,13 @@ void MFPT9Keyboard::pressed(uint8_t key)
 
     // Route to appropriate handler based on input mode
     if (inputMode == T9_PREDICT) {
-        handleT9Input(next_key);
+        handleT9Input(keyIndex);
     } else {
-        handleMultiTapInput(next_key);
+        handleMultiTapInput(keyIndex);
     }
 
     // Store the current key as the last key
-    last_key = next_key;
+    last_key = keyIndex;
     last_tap = now;
 }
 
