@@ -1,4 +1,7 @@
 name: Vendor CI
+permissions:
+  actions: read
+  contents: read
 concurrency:
   group: ci-${{ github.head_ref || github.run_id }}
   cancel-in-progress: true
@@ -259,7 +262,7 @@ jobs:
 
   gather-artifacts:
     permissions:
-      contents: write
+      contents: read
       pull-requests: write
     strategy:
       fail-fast: false
@@ -310,6 +313,7 @@ jobs:
           name: firmware-${{matrix.arch}}-${{ needs.version.outputs.long }}
           overwrite: true
           path: |
+            ./firmware-*.mt.json
             ./firmware-*.bin
             ./firmware-*.uf2
             ./firmware-*.hex
@@ -318,6 +322,7 @@ jobs:
             ./device-*.bat
             ./littlefs-*.bin
             ./bleota*bin
+            ./mt-*-ota.bin
             ./Meshtastic_nRF52_factory_erase*.uf2
           retention-days: 30
 
@@ -355,6 +360,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
   release-artifacts:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' }}
     outputs:
@@ -419,6 +426,8 @@ jobs:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   release-firmware:
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
