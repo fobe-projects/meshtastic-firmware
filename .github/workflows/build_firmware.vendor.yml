@@ -45,13 +45,20 @@ jobs:
 
       - name: Build ${{ inputs.platform }}
         id: build
-        uses: fobe-projects/action-meshtastic-firmware-builder@main
-        with:
-          pio_platform: ${{ inputs.platform }}
-          pio_env: ${{ inputs.pio_env }}
-          pio_target: build
-          ota_firmware_source: ${{ steps.ota_dir.outputs.src || '' }}
-          ota_firmware_target: ${{ steps.ota_dir.outputs.tgt || '' }}
+        env:
+          MT_PLATFORM: ${{ inputs.platform }}
+          MT_ENV: ${{ inputs.pio_env }}
+          MT_TARGET: build
+          PLATFORMIO_BUILD_DIR: /workspace/.pio/build
+        run: |
+          docker run --rm \
+            --env GITHUB_ACTIONS \
+            --env MT_PLATFORM --env MT_ENV --env MT_TARGET \
+            --env PLATFORMIO_BUILD_DIR \
+            -v "$GITHUB_WORKSPACE:/workspace" \
+            --entrypoint /bin/bash \
+            "ghcr.io/fobe-projects/action-meshtastic-firmware-builder:master-$MT_PLATFORM" \
+            -ec 'python3 -m pip install --upgrade platformio==6.1.19; exec /entrypoint.sh'
 
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4
