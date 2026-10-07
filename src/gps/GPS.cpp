@@ -820,6 +820,7 @@ bool GPS::setup()
 {
     if (!didSerialInit) {
         int msglen = 0;
+        bool modelFromBoard = false;
         if (tx_gpio && gnssModel == GNSS_MODEL_UNKNOWN) {
             if (!hasProbeCache && !triedProbeCache) {
                 (void)loadProbeCache();
@@ -852,16 +853,26 @@ bool GPS::setup()
                 if (gnssModel != GNSS_MODEL_UNKNOWN) {
                     detectedBaud = rareSerialSpeeds[speedSelect];
                 } else if (currentStep == 0 && ++speedSelect == array_count(rareSerialSpeeds)) {
+#ifdef FOBE_MESHKIT_C1
+                    LOG_WARN("GPS probe failed; initialize board L76K, awaiting NMEA");
+                    gnssModel = GNSS_MODEL_MTK;
+                    detectedBaud = GPS_BAUDRATE;
+                    modelFromBoard = true;
+#else
                     LOG_WARN("Give up GPS probe, set to %d", GPS_BAUDRATE);
                     return true;
+#endif
                 }
             }
 #endif
         }
 
         if (gnssModel != GNSS_MODEL_UNKNOWN) {
-            setConnected();
-            (void)saveProbeCache();
+            // A board fallback is only connected once whileActive() receives valid NMEA.
+            if (!modelFromBoard) {
+                setConnected();
+                (void)saveProbeCache();
+            }
         } else {
             return false;
         }

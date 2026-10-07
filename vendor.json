@@ -1,0 +1,5 @@
+{
+  "name": "meshtastic-firmware",
+  "env_prefix": "fobe",
+  "maintainer": "FoBE Studio"
+}
