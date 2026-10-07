@@ -13,7 +13,8 @@ on:
         required: true
         type: string
 
-permissions: read-all
+permissions:
+  contents: read
 
 jobs:
   pio-build:
@@ -25,23 +26,6 @@ jobs:
           submodules: recursive
           ref: ${{github.event.pull_request.head.ref}}
           repository: ${{github.event.pull_request.head.repo.full_name}}
-
-      - name: Set OTA firmware source and target
-        if: startsWith(inputs.platform, 'esp32')
-        id: ota_dir
-        env:
-          PIO_PLATFORM: ${{ inputs.platform }}
-        run: |
-          if [ "$PIO_PLATFORM" = "esp32s3" ]; then
-            echo "src=firmware-s3.bin" >> $GITHUB_OUTPUT
-            echo "tgt=release/bleota-s3.bin" >> $GITHUB_OUTPUT
-          elif [ "$PIO_PLATFORM" = "esp32c3" ] || [ "$PIO_PLATFORM" = "esp32c6" ]; then
-            echo "src=firmware-c3.bin" >> $GITHUB_OUTPUT
-            echo "tgt=release/bleota-c3.bin" >> $GITHUB_OUTPUT
-          elif [ "$PIO_PLATFORM" = "esp32" ]; then
-            echo "src=firmware.bin" >> $GITHUB_OUTPUT
-            echo "tgt=release/bleota.bin" >> $GITHUB_OUTPUT
-          fi
 
       - name: Build ${{ inputs.platform }}
         id: build
@@ -67,12 +51,31 @@ jobs:
               exec /entrypoint.sh
             '
 
+      - name: Include unified ESP32 OTA firmware
+        if: inputs.platform == 'esp32' || inputs.platform == 'esp32s3'
+        working-directory: release
+        env:
+          PIO_PLATFORM: ${{ inputs.platform }}
+          OTA_URL: https://github.com/meshtastic/esp32-unified-ota/releases/download/v1.0.1/mt-${{ inputs.platform }}-ota.bin
+        run: |
+          OTA_FILE="mt-${PIO_PLATFORM}-ota.bin"
+          curl --fail --location --retry 3 --output "$OTA_FILE" "$OTA_URL"
+          OTA_MD5=$(md5sum "$OTA_FILE" | cut -d' ' -f1)
+          OTA_SIZE=$(stat -c%s "$OTA_FILE")
+          for manifest in firmware-*.mt.json; do
+            jq --arg name "$OTA_FILE" --arg md5 "$OTA_MD5" --argjson bytes "$OTA_SIZE" \
+              '.files += [{name: $name, md5: $md5, bytes: $bytes, part_name: "app1"}]' \
+              "$manifest" > "${manifest}.tmp"
+            mv "${manifest}.tmp" "$manifest"
+          done
+
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4
         with:
           name: firmware-${{ inputs.platform }}-${{ inputs.pio_env }}-${{ inputs.version }}.zip
           overwrite: true
           path: |
+            release/*.mt.json
             release/*.bin
             release/*.elf
             release/*.uf2
