@@ -5,7 +5,7 @@
 #define BUTTON_NEED_PULLUP
 
 #define BATTERY_PIN 10 // A battery voltage measurement pin, voltage divider connected here to measure battery voltage
-#define ADC_CHANNEL ADC1_GPIO10_CHANNEL
+#define ADC_CHANNEL ADC_CHANNEL_9
 #define ADC_ATTENUATION ADC_ATTEN_DB_12 // lower dB for high resistance voltage divider
 #define ADC_MULTIPLIER 1.73
 

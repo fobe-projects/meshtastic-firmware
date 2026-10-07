@@ -10,6 +10,9 @@
 #define USB_PRODUCT "FoBE Quill ESP32S3 Mesh"
 #define USB_SERIAL "" // Empty string for MAC address
 
+#define PIN_PERI_EN 1
+#define PIN_OLED_EN 12
+
 /*
  * Serial interfaces
  */

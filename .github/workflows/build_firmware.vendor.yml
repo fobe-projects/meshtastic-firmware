@@ -58,7 +58,14 @@ jobs:
             -v "$GITHUB_WORKSPACE:/workspace" \
             --entrypoint /bin/bash \
             "ghcr.io/fobe-projects/action-meshtastic-firmware-builder:master-$MT_PLATFORM" \
-            -ec 'python3 -m pip install --upgrade platformio==6.1.19; exec /entrypoint.sh'
+            -ec '
+              python3 -m pip install --upgrade platformio==6.1.19
+              if [[ "$MT_PLATFORM" == esp32* ]]; then
+                python3 -m venv "$PLATFORMIO_CORE_DIR/penv"
+                "$PLATFORMIO_CORE_DIR/penv/bin/python" -m pip install --upgrade pioarduino==6.1.19
+              fi
+              exec /entrypoint.sh
+            '
 
       - name: Store binaries as an artifact
         uses: actions/upload-artifact@v4
